@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <FlashCard v-for="({ gender, value, translation}, index) in cards" :gender="gender" :value="value" :translation="translation" :key="index" @done="removeCard" />
+    <FlashCard v-for="({ gender, value, translation}, index) in cards" :gender="gender" :value="value" :translation="translation" :key="index" :order="index" @done="removeCard" />
   </div>
 </template>
 
@@ -27,8 +27,7 @@ export default {
     axios
       .get("http://localhost:5000/words")
       .then(res => {
-        this.cards = res.data;
-        console.log(res.data[0]);
+        this.cards = res.data.reverse();
       })
   }
 }

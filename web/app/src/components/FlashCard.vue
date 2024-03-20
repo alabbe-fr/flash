@@ -1,10 +1,10 @@
 <template>
-  <div class="flash-card" @click="flip">
+  <div class="flash-card" @click="flip" :style="cssVars">
     <div class="flash-card-inner" :class="{ flipped: flipped}">
       <div class="flash-card flash-card-front">
         <h1 class="flash-title">{{ translation }}</h1>
       </div>
-      <div class="flash-card flash-card-back">
+      <div class="flash-card flash-card-back" :style="cssVars">
         <h1 class="flash-title">{{ gender }} {{ value }}</h1>
         <button class="flash-button" @click="done">OK</button>
       </div>
@@ -13,27 +13,45 @@
 </template>
 
 <script>
+
+const MAX_ANGLE = 3;
+
 export default {
   name: 'FlashCard',
   data() {
     return {
-      flipped: false
+      flipped: false,
+      angle: 0
     }
   },
   props: {
     gender: String,
     value: String,
     translation: String,
+    order: Number,
+  },
+  computed: {
+    cssVars() {
+      return {
+        "--angle": `${this.angle}deg`,
+        "--z-index": this.order,
+      }
+    }
   },
   methods: {
     flip() {
       this.flipped = !this.flipped;
-      console.log(this.flipped);
     },
     done() {
       this.$emit('done');
-    }
+    },
+    generateRandomAngle() {
+      this.angle = Math.floor(Math.random() * (2 * MAX_ANGLE + 1) - MAX_ANGLE);
+    },
   },
+  mounted() {
+    this.generateRandomAngle();
+  } 
 }
 </script>
 
@@ -47,7 +65,8 @@ export default {
   width: 50vh;
   perspective: 200vh;
   color: #5352ed;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotate(var(--angle));
+  z-index: var(--z-index);
 }
 
 .flash-card-inner {
@@ -88,7 +107,7 @@ export default {
 }
 
 .flash-card-back {
-  transform: translate(-50%, -50%) rotateY(180deg);
+  transform: translate(-50%, -50%) rotate(var(--angle)) rotateY(180deg);
 }
 
 .flash-title {
