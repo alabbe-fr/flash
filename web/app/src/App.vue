@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <FlashCard v-for="({ gender, value, translation}, index) in cards" :gender="gender" :value="value" :translation="translation" :key="index" :order="index" @done="removeCard" />
+    <FlashCard v-for="({ gender, value, translation}, index) in cards" :gender="gender" :value="value" :translation="translation" :key="index" :order="index" @success="success" @fail="fail" />
   </div>
 </template>
 
@@ -15,12 +15,21 @@ export default {
   },
   data() {
     return {
-      cards: []
+      cards: [],
+      score: 0
     }
   },
   methods: {
     removeCard() {
       this.cards.pop();
+      console.log(this.score);
+    },
+    success() {
+      this.score += 1;
+      this.removeCard();
+    },
+    fail() {
+      this.removeCard();
     }
   },
   mounted () {
@@ -42,7 +51,7 @@ body {
 .app {
   width: 100vw;
   height: 100vh;
-  background-color: #3f3fb5;
+  background-color: #1F4690;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

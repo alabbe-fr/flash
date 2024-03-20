@@ -1,12 +1,15 @@
 <template>
-  <div class="flash-card" @click="flip" :style="cssVars">
+  <div class="flash-card" @click="flip">
     <div class="flash-card-inner" :class="{ flipped: flipped}">
-      <div class="flash-card flash-card-front">
+      <div class="flash-card-front" :style="cssVars">
         <h1 class="flash-title">{{ translation }}</h1>
       </div>
-      <div class="flash-card flash-card-back" :style="cssVars">
+      <div class="flash-card-back">
         <h1 class="flash-title">{{ gender }} {{ value }}</h1>
-        <button class="flash-button" @click="done">OK</button>
+        <div class="flash-button-container">
+          <button class="flash-button flash-button-check" @click="success"><img class="flash-icon" src="../assets/check.svg"/></button>
+          <button class="flash-button flash-button-close" @click="fail"><img class="flash-icon" src="../assets/close.svg"/></button>
+        </div>
       </div>
     </div>
   </div>
@@ -42,8 +45,11 @@ export default {
     flip() {
       this.flipped = !this.flipped;
     },
-    done() {
-      this.$emit('done');
+    success() {
+      this.$emit('success');
+    },
+    fail() {
+      this.$emit('fail');
     },
     generateRandomAngle() {
       this.angle = Math.floor(Math.random() * (2 * MAX_ANGLE + 1) - MAX_ANGLE);
@@ -64,9 +70,9 @@ export default {
   height: 75vh;
   width: 50vh;
   perspective: 200vh;
-  color: #5352ed;
-  transform: translate(-50%, -50%) rotate(var(--angle));
+  color: #3A5BA0;
   z-index: var(--z-index);
+  transform: translate(-50%, -50%);
 }
 
 .flash-card-inner {
@@ -90,13 +96,13 @@ export default {
   backface-visibility: hidden;
   background-color: #f1f1f8;
   border-radius: 2vh;
-  border-color: #5352ed;
+  border-color: #3A5BA0;
   border-width: 1vh;
-  border-style: solid;
+  border-style: outset;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 3em 0;
+  align-items: stretch;
+  padding: 6em 0;
   box-sizing: border-box;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 0.5em 1em;
 }
@@ -106,25 +112,48 @@ export default {
   cursor: pointer;
 }
 
+.flash-card-front {
+  transform: rotate(var(--angle));
+}
+
 .flash-card-back {
-  transform: translate(-50%, -50%) rotate(var(--angle)) rotateY(180deg);
+  transform: rotateY(180deg);
 }
 
 .flash-title {
   font-size: 3em;
 }
 
-.flash-button {
-  padding: 1rem 2rem;
-  font-size: 2rem;
+.flash-button-container {
   margin-top: auto;
+  display: flex;
+  justify-content: space-around;
+}
+
+.flash-button {
+  padding: 1rem;
+  font-size: 2rem;
   border-radius: 1rem;
-  border-color: #5352ed;
   border-width: 0.5rem;
   background-color: white;
-  color: #5352ed;
+  color: #11144C;
   font-weight: bold;
   cursor: pointer;
+}
+
+.flash-button-check {
+  border-color: #6BCB77;
+  background-color: #f3fff4;
+}
+
+.flash-button-close {
+  border-color: #FF6B6B;
+  background-color: #fff0f0;
+}
+
+.flash-icon {
+  width: 2em;
+  height: 2em;
 }
 
 </style>
