@@ -1,6 +1,14 @@
 <template>
   <div class="app">
-    <FlashCard v-for="({ gender, value, translation}, index) in cards" :gender="gender" :value="value" :translation="translation" :key="index" :order="index" @success="success" @fail="fail" />
+    <div class="discard-pile">
+      <FlashCard v-for="({ gender, value, translation}, index) in successCards" :gender="gender" :value="value" :translation="translation" :key="index" :order="index" disabled/>
+    </div>
+    <div class="flash-card-container" v-if="cards.length">
+      <FlashCard v-for="({ gender, value, translation}, index) in cards" :gender="gender" :value="value" :translation="translation" :key="index" :order="index" @success="success" @fail="fail" />
+    </div>
+    <div class="discard-pile">
+      <FlashCard v-for="({ gender, value, translation}, index) in failedCards" :gender="gender" :value="value" :translation="translation" :key="index" :order="index" disabled/>
+    </div>
   </div>
 </template>
 
@@ -16,20 +24,18 @@ export default {
   data() {
     return {
       cards: [],
+      successCards: [],
+      failedCards: [],
       score: 0
     }
   },
   methods: {
-    removeCard() {
-      this.cards.pop();
-      console.log(this.score);
-    },
     success() {
       this.score += 1;
-      this.removeCard();
+      this.successCards.push(this.cards.pop());
     },
     fail() {
-      this.removeCard();
+      this.failedCards.push(this.cards.pop());
     }
   },
   mounted () {
@@ -55,6 +61,23 @@ body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.flash-card-container {
+  position: relative;
+  height: 75vh;
+  width: 50vh;
+}
+
+.discard-pile {
+  position: relative;
+  height: 45vh;
+  width: 30vh;
+  background-color: #3A5BA0;
+  border-radius: 2vh;
 }
 
 </style>

@@ -32,6 +32,7 @@ export default {
     value: String,
     translation: String,
     order: Number,
+    disabled: Boolean,
   },
   computed: {
     cssVars() {
@@ -43,6 +44,7 @@ export default {
   },
   methods: {
     flip() {
+      if (this.disabled) return;
       this.flipped = !this.flipped;
     },
     success() {
@@ -52,7 +54,7 @@ export default {
       this.$emit('fail');
     },
     generateRandomAngle() {
-      this.angle = Math.floor(Math.random() * (2 * MAX_ANGLE + 1) - MAX_ANGLE);
+      this.angle = this.disabled ? 0 : Math.floor(Math.random() * (2 * MAX_ANGLE + 1) - MAX_ANGLE);
     },
   },
   mounted() {
@@ -67,8 +69,8 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  height: 75vh;
-  width: 50vh;
+  height: 100%;
+  width: 100%;
   perspective: 200vh;
   color: #3A5BA0;
   z-index: var(--z-index);
@@ -95,9 +97,9 @@ export default {
   -webkit-backface-visibility: hidden; /* Safari */
   backface-visibility: hidden;
   background-color: #f1f1f8;
-  border-radius: 2vh;
+  border-radius: 2em;
   border-color: #3A5BA0;
-  border-width: 1vh;
+  border-width: 1em;
   border-style: outset;
   display: flex;
   flex-direction: column;
