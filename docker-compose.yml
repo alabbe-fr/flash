@@ -23,5 +23,12 @@ services:
     volumes:
       - ./api/app:/app/
 
+  web:
+    build: ./web
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./web/app:/app
+
 volumes:
   postgres_data:

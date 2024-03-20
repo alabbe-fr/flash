@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, abort, jsonify
 from flask_migrate import Migrate
+from flask_cors import CORS
 from marshmallow import ValidationError
 
 from models import Word, Noun
@@ -10,6 +11,7 @@ from db import db
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+CORS(app, origins=["http://localhost:8000"])
 
 db.init_app(app)
 migrate = Migrate(app, db)
