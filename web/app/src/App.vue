@@ -57,7 +57,7 @@ body {
 .app {
   width: 100vw;
   height: 100vh;
-  background-color: #1F4690;
+  background-color: #0e387a;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
