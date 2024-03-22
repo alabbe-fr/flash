@@ -1,5 +1,3 @@
-import enum
-
 from db import db
 
 
@@ -11,6 +9,8 @@ class Word(db.Model):
     translation = db.Column(db.String(256), nullable=False)
 
     __mapper_args__ = {"polymorphic_on": word_type}
+
+    decks = db.relationship("Deck", secondary="word_deck", back_populates="words")
 
     def to_dict(self):
         return {"translation": self.translation}
@@ -34,3 +34,25 @@ class Noun(Word):
             },
             **super().to_dict(),
         )
+
+
+class Deck(db.Model):
+    __tablename__ = "decks"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), nullable=False)
+
+    words = db.relationship("Word", secondary="word_deck", back_populates="decks")
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "words": [word.to_dict() for word in self.words],
+        }
+
+
+word_deck = db.Table(
+    "word_deck",
+    db.Column("word_id", db.Integer, db.ForeignKey("words.id")),
+    db.Column("deck_id", db.Integer, db.ForeignKey("decks.id")),
+)

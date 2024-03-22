@@ -10,4 +10,10 @@ class NounSchema(WordSchema):
     gender = fields.Str(required=True)
 
 
+class DeckSchema(Schema):
+    name = fields.Str(required=True)
+    words = fields.List(fields.Str())
+
+
 noun_schema = NounSchema()
+deck_schema = DeckSchema()
