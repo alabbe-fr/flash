@@ -22,6 +22,15 @@ def get_words():
     return [word.to_dict() for word in Word.query.all()]
 
 
+@app.route("/words/<deck>")
+def get_deck_words(deck):
+    deck = Deck.query.filter_by(name=deck).first()
+    if not deck:
+        abort(404)
+
+    return [word.to_dict() for word in deck.words]
+
+
 @app.route("/word/<word_type>", methods=["POST"])
 def add_word(word_type):
     try:

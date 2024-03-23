@@ -47,7 +47,6 @@ class Deck(db.Model):
     def to_dict(self):
         return {
             "name": self.name,
-            "words": [word.to_dict() for word in self.words],
         }
 
 
