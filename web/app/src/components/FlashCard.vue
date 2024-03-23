@@ -1,14 +1,16 @@
 <template>
   <div class="flash-card" @click="flip">
-    <div class="flash-card-inner" :class="{ flipped: flipped}">
+    <div class="flash-card-inner" :class="{ flipped: flipped }">
       <div class="flash-card-front" :style="cssVars">
         <h1 class="flash-title">{{ translation }}</h1>
       </div>
       <div class="flash-card-back">
         <h1 class="flash-title">{{ gender }} {{ value }}</h1>
         <div class="flash-button-container">
-          <button class="flash-button flash-button-check" @click="success"><img class="flash-icon" src="../assets/check.svg"/></button>
-          <button class="flash-button flash-button-close" @click="fail"><img class="flash-icon" src="../assets/close.svg"/></button>
+          <button class="flash-button flash-button-check" @click="success"><img class="flash-icon"
+              src="../assets/check.svg" /></button>
+          <button class="flash-button flash-button-close" @click="fail"><img class="flash-icon"
+              src="../assets/close.svg" /></button>
         </div>
       </div>
     </div>
@@ -59,12 +61,11 @@ export default {
   },
   mounted() {
     this.generateRandomAngle();
-  } 
+  }
 }
 </script>
 
 <style scoped>
-
 .flash-card {
   position: absolute;
   top: 50%;
@@ -90,11 +91,13 @@ export default {
   transform: rotateY(180deg);
 }
 
-.flash-card-front, .flash-card-back {
+.flash-card-front,
+.flash-card-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
+  -webkit-backface-visibility: hidden;
+  /* Safari */
   backface-visibility: hidden;
   background-color: #f1f1f8;
   border-radius: 2em;
@@ -109,7 +112,8 @@ export default {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 0.5em 1em;
 }
 
-.flash-card-front:hover, .flash-card-back:hover {
+.flash-card-front:hover,
+.flash-card-back:hover {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 1.5em 3em;
   cursor: pointer;
 }
@@ -137,9 +141,6 @@ export default {
   font-size: 2rem;
   border-radius: 1rem;
   border-width: 0.5rem;
-  background-color: white;
-  color: #11144C;
-  font-weight: bold;
   cursor: pointer;
 }
 
@@ -157,5 +158,4 @@ export default {
   width: 2em;
   height: 2em;
 }
-
 </style>
