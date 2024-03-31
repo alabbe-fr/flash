@@ -3,9 +3,12 @@
         <h1 class="dech-name">
             {{ name }}
         </h1>
-        <img class="deck-level" src="../assets/easy.svg" v-if="level === 'easy'" />
-        <img class="deck-level" src="../assets/medium.svg" v-if="level === 'medium'" />
-        <img class="deck-level" src="../assets/hard.svg" v-if="level === 'hard'" />
+        <img class="deck-level" src="../assets/deck/easy.svg" v-if="level === 'easy' && !disabled" />
+        <img class="deck-level" src="../assets/deck/medium.svg" v-if="level === 'medium' && !disabled" />
+        <img class="deck-level" src="../assets/deck/hard.svg" v-if="level === 'hard' && !disabled" />
+        <img class="deck-level" src="../assets/deck/easy-disabled.svg" v-if="level === 'easy' && disabled" />
+        <img class="deck-level" src="../assets/deck/medium-disabled.svg" v-if="level === 'medium' && disabled" />
+        <img class="deck-level" src="../assets/deck/hard-disabled.svg" v-if="level === 'hard' && disabled" />
     </button>
 </template>
 
