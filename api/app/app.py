@@ -3,7 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
 from marshmallow import ValidationError
-import sqlalchemy
+from sqlalchemy import func
 
 from models import Word, Answer, Noun, Deck, DeckLevel
 from validators import noun_schema, deck_schema, answer_schema
@@ -85,7 +85,7 @@ def get_decks():
     decks = []
     for deck in Deck.query.all():
         score = len(
-            db.session.query(sqlalchemy.func.count(Answer.word))
+            db.session.query(func.count(Answer.word))
             .join(Word, Answer.word == Word.id)
             .join(Deck, Word.decks)
             .filter(Deck.id == deck.id)
