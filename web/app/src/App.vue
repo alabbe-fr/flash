@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="decks-container">
-      <FlashDeck v-for="({ name }, index) in decks" :name="name" :key="index" @pick="pick(index)"
+      <FlashDeck v-for="({ name, level }, index) in decks" :name="name" :level="level" :key="index" @pick="pick(index)"
         :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />
     </div>
   </div>

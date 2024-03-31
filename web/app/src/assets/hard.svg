@@ -1,0 +1,10 @@
+<svg width="140" height="120" xmlns="http://www.w3.org/2000/svg">
+    <rect width="30" height="50" x="5" y="65" rx="5" ry="5" fill="#96CD39" stroke-width="10"
+        stroke="#3A5BA0" />
+    <rect width="30" height="80" x="55" y="35" rx="5" ry="5" fill="#FFBA47"
+        stroke-width="10"
+        stroke="#3A5BA0" />
+    <rect width="30" height="110" x="105" y="5" rx="5" ry="5" fill="#FF5B44"
+        stroke-width="10"
+        stroke="#3A5BA0" />
+</svg>
