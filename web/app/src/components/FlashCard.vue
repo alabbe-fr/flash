@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 
 const MAX_ANGLE = 3;
 
@@ -49,11 +50,21 @@ export default {
       if (this.disabled) return;
       this.flipped = !this.flipped;
     },
+    submit(correct) {
+      axios
+        .post(`http://localhost:5000/answer`, {
+          word: this.translation,
+          correct
+        })
+        .then(() => { });
+    },
     success() {
       this.$emit('success');
+      this.submit(true);
     },
     fail() {
       this.$emit('fail');
+      this.submit(false);
     },
     generateRandomAngle() {
       this.angle = this.disabled ? 0 : Math.floor(Math.random() * (2 * MAX_ANGLE + 1) - MAX_ANGLE);

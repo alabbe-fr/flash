@@ -14,9 +14,18 @@ class Word(db.Model):
     __mapper_args__ = {"polymorphic_on": word_type}
 
     decks = db.relationship("Deck", secondary="word_deck", back_populates="words")
+    answers = db.relationship("Answer", backref="words")
 
     def to_dict(self):
         return {"translation": self.translation}
+
+
+class Answer(db.Model):
+    __tablename__ = "answers"
+
+    id = db.Column(db.Integer, primary_key=True)
+    word = db.Column(db.Integer, db.ForeignKey("words.id"), nullable=False)
+    correct = db.Column(db.Boolean, nullable=False)
 
 
 class Noun(Word):

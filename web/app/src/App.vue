@@ -7,11 +7,12 @@
       </div>
       <div class="flash-card-container">
         <FlashCard v-for="({ gender, value, translation }, index) in cards" :gender="gender" :value="value"
-          :translation="translation" :key="index" :order="index" @success="success" @fail="fail" />
+          :translation="translation" :key="index" :order="index" @success="discard" @fail="discard" />
       </div>
     </div>
     <div class="decks-container">
-      <FlashDeck v-for="({ name, level }, index) in decks" :name="name" :level="level" :key="index" @pick="pick(index)"
+      <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
+        :score="score" :key="index" @pick="pick(index)"
         :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />
     </div>
   </div>
@@ -33,16 +34,11 @@ export default {
       decks: [],
       currentDeckIndex: null,
       cards: [],
-      discardCards: [],
-      score: 0
+      discardCards: []
     }
   },
   methods: {
-    success() {
-      this.score += 1;
-      this.discardCards.push(this.cards.pop());
-    },
-    fail() {
+    discard() {
       this.discardCards.push(this.cards.pop());
     },
     pick(index) {

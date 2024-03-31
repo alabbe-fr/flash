@@ -7,6 +7,11 @@ class WordSchema(Schema):
     translation = fields.Str(required=True)
 
 
+class AnswerSchema(Schema):
+    word = fields.Str(required=True)
+    correct = fields.Boolean(required=True)
+
+
 class NounSchema(WordSchema):
     value = fields.Str(required=True)
     gender = fields.Str(required=True)
@@ -19,4 +24,5 @@ class DeckSchema(Schema):
 
 
 noun_schema = NounSchema()
+answer_schema = AnswerSchema()
 deck_schema = DeckSchema()

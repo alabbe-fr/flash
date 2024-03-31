@@ -3,9 +3,10 @@ from flask import Flask, request, abort, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
 from marshmallow import ValidationError
+import sqlalchemy
 
-from models import Word, Noun, Deck, DeckLevel
-from validators import noun_schema, deck_schema
+from models import Word, Answer, Noun, Deck, DeckLevel
+from validators import noun_schema, deck_schema, answer_schema
 from db import db
 
 app = Flask(__name__)
@@ -57,9 +58,51 @@ def add_word(word_type):
     return "", 201
 
 
+@app.route("/answer", methods=["POST"])
+def answer():
+    try:
+        data = answer_schema.load(request.json)
+
+        word = Word.query.filter_by(translation=data["word"]).first()
+        if not word:
+            abort(400)
+
+        new_answer = Answer(
+            word=word.id,
+            correct=data["correct"],
+        )
+
+        db.session.add(new_answer)
+        db.session.commit()
+    except ValidationError as err:
+        return jsonify({"message": "Validation error", "errors": err.messages}), 400
+
+    return "", 200
+
+
 @app.route("/decks")
 def get_decks():
-    return [deck.to_dict() for deck in Deck.query.all()]
+    decks = []
+    for deck in Deck.query.all():
+        score = len(
+            db.session.query(sqlalchemy.func.count(Answer.word))
+            .join(Word, Answer.word == Word.id)
+            .join(Deck, Word.decks)
+            .filter(Deck.id == deck.id)
+            .filter(Answer.correct)
+            .group_by(Word.id)
+            .all()
+        )
+
+        decks.append(
+            {
+                "score": score,
+                "size": len(deck.words),
+                **deck.to_dict(),
+            }
+        )
+
+    return decks
 
 
 @app.route("/deck", methods=["POST"])

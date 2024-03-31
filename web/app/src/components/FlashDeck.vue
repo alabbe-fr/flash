@@ -3,6 +3,7 @@
         <h1 class="dech-name">
             {{ name }}
         </h1>
+        <h1 class="deck-score">{{ score }}/{{ size }}</h1>
         <img class="deck-level" src="../assets/deck/easy.svg" v-if="level === 'easy' && !disabled" />
         <img class="deck-level" src="../assets/deck/medium.svg" v-if="level === 'medium' && !disabled" />
         <img class="deck-level" src="../assets/deck/hard.svg" v-if="level === 'hard' && !disabled" />
@@ -19,6 +20,8 @@ export default {
     props: {
         name: String,
         level: String,
+        size: Number,
+        score: Number,
         disabled: Boolean
     },
     methods: {
@@ -62,6 +65,13 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.deck-score {
+    position: absolute;
+    bottom: 0.5em;
+    left: 0.5em;
+    margin: 0;
 }
 
 .deck-level {
