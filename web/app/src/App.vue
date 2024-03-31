@@ -110,5 +110,6 @@ body {
   height: 100vh;
   width: 30vh;
   padding: 0 1em;
+  overflow-y: scroll;
 }
 </style>
