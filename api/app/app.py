@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from marshmallow import ValidationError
 from sqlalchemy import func
+from random import shuffle
 
 from models import Word, Answer, Noun, Deck, DeckLevel
 from validators import noun_schema, deck_schema, answer_schema
@@ -29,7 +30,10 @@ def get_deck_words(deck):
     if not deck:
         abort(404)
 
-    return [word.to_dict() for word in deck.words]
+    words = [word.to_dict() for word in deck.words]
+    shuffle(words)
+
+    return words
 
 
 @app.route("/word/<word_type>", methods=["POST"])
