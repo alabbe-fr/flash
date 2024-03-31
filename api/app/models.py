@@ -1,4 +1,7 @@
+from sqlalchemy.dialects.postgresql import ENUM
+
 from db import db
+from utils import ExtendedEnum
 
 
 class Word(db.Model):
@@ -36,18 +39,23 @@ class Noun(Word):
         )
 
 
+class DeckLevel(ExtendedEnum):
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
+
+
 class Deck(db.Model):
     __tablename__ = "decks"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
+    level = db.Column(ENUM(DeckLevel, create_type=False), nullable=False)
 
     words = db.relationship("Word", secondary="word_deck", back_populates="decks")
 
     def to_dict(self):
-        return {
-            "name": self.name,
-        }
+        return {"name": self.name, "level": self.level.value}
 
 
 word_deck = db.Table(

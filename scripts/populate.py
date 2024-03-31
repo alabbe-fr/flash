@@ -3,6 +3,7 @@ import requests
 
 URL = "http://127.0.0.1:5000"
 HEADERS = {"Content-Type": "application/json"}
+PROXIES = {"http": "http://127.0.0.1:8080"}
 
 with open("nouns.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile, delimiter=":", quotechar='"')
@@ -13,7 +14,12 @@ with open("nouns.csv", newline="") as csvfile:
             "translation": row[2],
         }
 
-        requests.post(f"{URL}/word/noun", json=noun, headers=HEADERS)
+        requests.post(
+            f"{URL}/word/noun",
+            json=noun,
+            headers=HEADERS,
+            proxies=PROXIES,
+        )
 
 with open("decks.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile, delimiter=":", quotechar='"')
@@ -30,6 +36,11 @@ with open("decks.csv", newline="") as csvfile:
                         "words": [],
                     }
                 )
+        elif i == 1:
+            j = 0
+            for level in row:
+                decks[j]["level"] = level
+                j += 1
         else:
             j = 0
             for word in row:
@@ -40,4 +51,9 @@ with open("decks.csv", newline="") as csvfile:
         i += 1
 
     for deck in decks:
-        requests.post(f"{URL}/deck", json=deck, headers=HEADERS)
+        requests.post(
+            f"{URL}/deck",
+            json=deck,
+            headers=HEADERS,
+            proxies=PROXIES,
+        )

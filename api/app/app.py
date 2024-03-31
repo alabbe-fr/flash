@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from marshmallow import ValidationError
 
-from models import Word, Noun, Deck
+from models import Word, Noun, Deck, DeckLevel
 from validators import noun_schema, deck_schema
 from db import db
 
@@ -66,11 +66,13 @@ def get_decks():
 def add_deck():
     try:
         data = deck_schema.load(request.json)
+        level = DeckLevel[data["level"].upper()]
 
-        deck = Deck.query.filter_by(name=data["name"]).first()
+        deck = Deck.query.filter_by(name=data["name"], level=level).first()
         if not deck:
             deck = Deck(
                 name=data["name"],
+                level=level,
             )
             db.session.add(deck)
 

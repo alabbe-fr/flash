@@ -1,4 +1,6 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
+
+from models import DeckLevel
 
 
 class WordSchema(Schema):
@@ -12,6 +14,7 @@ class NounSchema(WordSchema):
 
 class DeckSchema(Schema):
     name = fields.Str(required=True)
+    level = fields.Str(validate=validate.OneOf(DeckLevel.values()))
     words = fields.List(fields.Str())
 
 
