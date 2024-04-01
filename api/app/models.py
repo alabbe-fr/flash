@@ -1,4 +1,5 @@
 from sqlalchemy.dialects.postgresql import ENUM
+import datetime
 
 from db import db
 from utils import ExtendedEnum
@@ -11,6 +12,7 @@ class Word(db.Model):
     recto = db.Column(db.String(256), nullable=False)
     verso = db.Column(db.String(256), nullable=False)
     picture = db.Column(db.String(2048))
+    created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
     decks = db.relationship("Deck", secondary="word_deck", back_populates="words")
     answers = db.relationship("Answer", backref="words")
@@ -32,6 +34,7 @@ class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.Integer, db.ForeignKey("words.id"), nullable=False)
     correct = db.Column(db.Boolean, nullable=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
 
 class DeckLevel(ExtendedEnum):
@@ -46,6 +49,7 @@ class Deck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
     level = db.Column(ENUM(DeckLevel, create_type=False), nullable=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
     words = db.relationship("Word", secondary="word_deck", back_populates="decks")
 
