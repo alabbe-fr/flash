@@ -74,12 +74,16 @@ def answer():
         if not word:
             abort(400)
 
-        new_answer = Answer(
-            word=word.id,
-            correct=data["correct"],
-        )
+        answer = Answer.query.filter_by(word=word.id).first()
+        if answer:
+            answer.correct = data["correct"]
+        else:
+            new_answer = Answer(
+                word=word.id,
+                correct=data["correct"],
+            )
+            db.session.add(new_answer)
 
-        db.session.add(new_answer)
         db.session.commit()
     except ValidationError as err:
         return jsonify({"message": "Validation error", "errors": err.messages}), 400
