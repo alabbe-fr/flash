@@ -26,11 +26,21 @@ def get_words():
 
 @app.route("/words/<deck_id>")
 def get_deck_words(deck_id):
-    deck = Deck.query.filter_by(id=deck_id).first()
-    if not deck:
-        abort(404)
+    if deck_id == "mistakes":
+        words = (
+            Word.query.join(Answer, Answer.word == Word.id)
+            .filter(Answer.correct == False)
+            .limit(10)
+            .all()
+        )
+    else:
+        deck = Deck.query.filter_by(id=deck_id).first()
+        if not deck:
+            abort(404)
 
-    words = [word.to_dict() for word in deck.words]
+        words = deck.words
+
+    words = [word.to_dict() for word in words]
     shuffle(words)
 
     return words
@@ -95,6 +105,24 @@ def answer():
 @app.route("/decks")
 def get_decks():
     decks = []
+
+    mistakes_deck_size = (
+        Answer.query.filter_by(correct=False)
+        .order_by(Answer.created_date.desc())
+        .limit(10)
+        .count()
+    )
+    if mistakes_deck_size > 0:
+        decks.append(
+            {
+                "score": 0,
+                "size": mistakes_deck_size,
+                "name": "Mistakes",
+                "level": "easy",
+                "id": "mistakes",
+            }
+        )
+
     for deck in Deck.query.all():
         score = len(
             db.session.query(func.count(Answer.word))
