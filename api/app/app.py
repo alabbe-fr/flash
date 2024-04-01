@@ -47,6 +47,7 @@ def add_word():
         new_noun = Word(
             recto=data["recto"],
             verso=data["verso"],
+            picture=data.get("picture"),
         )
 
         db.session.add(new_noun)

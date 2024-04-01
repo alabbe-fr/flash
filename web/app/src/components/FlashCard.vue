@@ -3,6 +3,7 @@
     <div class="flash-card-inner" :class="{ flipped: flipped }">
       <div class="flash-card-front" :style="cssVars">
         <h1 class="flash-title">{{ recto }}</h1>
+        <img class="flash-image" :src="picture" v-if="picture">
       </div>
       <div class="flash-card-back">
         <h1 class="flash-title">{{ verso }}</h1>
@@ -33,6 +34,7 @@ export default {
   props: {
     recto: String,
     verso: String,
+    picture: String,
     order: Number,
     disabled: Boolean,
   },
@@ -138,6 +140,12 @@ export default {
 
 .flash-title {
   font-size: 3em;
+}
+
+.flash-image {
+  width: 80%;
+  align-self: center;
+  margin-top: 5em;
 }
 
 .flash-button-container {

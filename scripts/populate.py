@@ -13,6 +13,9 @@ with open("words.csv", newline="") as csvfile:
             "recto": row[1],
         }
 
+        if len(row) >= 3:
+            word["picture"] = row[2]
+
         requests.post(
             f"{URL}/word",
             json=word,

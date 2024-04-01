@@ -6,6 +6,7 @@ from models import DeckLevel
 class WordSchema(Schema):
     recto = fields.Str(required=True)
     verso = fields.Str(required=True)
+    picture = fields.Str()
 
 
 class AnswerSchema(Schema):

@@ -10,6 +10,7 @@ class Word(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     recto = db.Column(db.String(256), nullable=False)
     verso = db.Column(db.String(256), nullable=False)
+    picture = db.Column(db.String(2048))
 
     decks = db.relationship("Deck", secondary="word_deck", back_populates="words")
     answers = db.relationship("Answer", backref="words")
@@ -21,6 +22,7 @@ class Word(db.Model):
         return {
             "recto": self.recto,
             "verso": self.verso,
+            "picture": self.picture,
         }
 
 
