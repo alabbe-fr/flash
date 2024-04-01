@@ -8,16 +8,20 @@ class Word(db.Model):
     __tablename__ = "words"
 
     id = db.Column(db.Integer, primary_key=True)
-    word_type = db.Column(db.String(32), nullable=False)
-    translation = db.Column(db.String(256), nullable=False)
-
-    __mapper_args__ = {"polymorphic_on": word_type}
+    recto = db.Column(db.String(256), nullable=False)
+    verso = db.Column(db.String(256), nullable=False)
 
     decks = db.relationship("Deck", secondary="word_deck", back_populates="words")
     answers = db.relationship("Answer", backref="words")
 
+    def __repr__(self):
+        return f"{self.recto} -> {self.verso}"
+
     def to_dict(self):
-        return {"translation": self.translation}
+        return {
+            "recto": self.recto,
+            "verso": self.verso,
+        }
 
 
 class Answer(db.Model):
@@ -26,26 +30,6 @@ class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.Integer, db.ForeignKey("words.id"), nullable=False)
     correct = db.Column(db.Boolean, nullable=False)
-
-
-class Noun(Word):
-    __mapper_args__ = {"polymorphic_identity": "noun"}
-
-    value = db.Column(db.String(256), nullable=False)
-    gender = db.Column(db.String(32), nullable=False)
-
-    def __repr__(self):
-        return f"{self.gender} {self.value} -> {self.translation}"
-
-    def to_dict(self):
-        return dict(
-            {
-                "type": "noun",
-                "gender": self.gender,
-                "value": self.value,
-            },
-            **super().to_dict(),
-        )
 
 
 class DeckLevel(ExtendedEnum):
@@ -64,7 +48,11 @@ class Deck(db.Model):
     words = db.relationship("Word", secondary="word_deck", back_populates="decks")
 
     def to_dict(self):
-        return {"name": self.name, "level": self.level.value}
+        return {
+            "name": self.name,
+            "level": self.level.value,
+            "id": self.id,
+        }
 
 
 word_deck = db.Table(

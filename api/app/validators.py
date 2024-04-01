@@ -4,17 +4,13 @@ from models import DeckLevel
 
 
 class WordSchema(Schema):
-    translation = fields.Str(required=True)
+    recto = fields.Str(required=True)
+    verso = fields.Str(required=True)
 
 
 class AnswerSchema(Schema):
     word = fields.Str(required=True)
     correct = fields.Boolean(required=True)
-
-
-class NounSchema(WordSchema):
-    value = fields.Str(required=True)
-    gender = fields.Str(required=True)
 
 
 class DeckSchema(Schema):
@@ -23,6 +19,6 @@ class DeckSchema(Schema):
     words = fields.List(fields.Str())
 
 
-noun_schema = NounSchema()
+word_schema = WordSchema()
 answer_schema = AnswerSchema()
 deck_schema = DeckSchema()

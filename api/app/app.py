@@ -6,8 +6,8 @@ from marshmallow import ValidationError
 from sqlalchemy import func
 from random import shuffle
 
-from models import Word, Answer, Noun, Deck, DeckLevel
-from validators import noun_schema, deck_schema, answer_schema
+from models import Word, Answer, Deck, DeckLevel
+from validators import word_schema, deck_schema, answer_schema
 from db import db
 
 app = Flask(__name__)
@@ -24,9 +24,9 @@ def get_words():
     return [word.to_dict() for word in Word.query.all()]
 
 
-@app.route("/words/<deck>")
-def get_deck_words(deck):
-    deck = Deck.query.filter_by(name=deck).first()
+@app.route("/words/<deck_id>")
+def get_deck_words(deck_id):
+    deck = Deck.query.filter_by(id=deck_id).first()
     if not deck:
         abort(404)
 
@@ -36,26 +36,21 @@ def get_deck_words(deck):
     return words
 
 
-@app.route("/word/<word_type>", methods=["POST"])
-def add_word(word_type):
+@app.route("/word", methods=["POST"])
+def add_word():
     try:
-        match word_type:
-            case "noun":
-                data = noun_schema.load(request.json)
+        data = word_schema.load(request.json)
 
-                if Word.query.filter_by(translation=data["translation"]).first():
-                    abort(400)
+        if Word.query.filter_by(recto=data["recto"]).first():
+            abort(400)
 
-                new_noun = Noun(
-                    translation=data["translation"],
-                    value=data["value"],
-                    gender=data["gender"],
-                )
+        new_noun = Word(
+            recto=data["recto"],
+            verso=data["verso"],
+        )
 
-                db.session.add(new_noun)
-                db.session.commit()
-            case _:
-                abort(400)
+        db.session.add(new_noun)
+        db.session.commit()
     except ValidationError as err:
         return jsonify({"message": "Validation error", "errors": err.messages}), 400
 
@@ -67,7 +62,7 @@ def answer():
     try:
         data = answer_schema.load(request.json)
 
-        word = Word.query.filter_by(translation=data["word"]).first()
+        word = Word.query.filter_by(recto=data["word"]).first()
         if not word:
             abort(400)
 
@@ -124,10 +119,10 @@ def add_deck():
             db.session.add(deck)
 
         for word_name in data["words"]:
-            if word_name in [w.translation for w in deck.words]:
+            if word_name in [w.recto for w in deck.words]:
                 continue
 
-            word = Word.query.filter_by(translation=word_name).first()
+            word = Word.query.filter_by(recto=word_name).first()
             if not word:
                 continue
 

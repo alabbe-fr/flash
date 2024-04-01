@@ -5,18 +5,17 @@ URL = "http://127.0.0.1:5000"
 HEADERS = {"Content-Type": "application/json"}
 PROXIES = {"http": "http://127.0.0.1:8080"}
 
-with open("nouns.csv", newline="") as csvfile:
+with open("words.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile, delimiter=":", quotechar='"')
     for row in spamreader:
-        noun = {
-            "gender": row[0],
-            "value": row[1],
-            "translation": row[2],
+        word = {
+            "verso": row[0],
+            "recto": row[1],
         }
 
         requests.post(
-            f"{URL}/word/noun",
-            json=noun,
+            f"{URL}/word",
+            json=word,
             headers=HEADERS,
             proxies=PROXIES,
         )

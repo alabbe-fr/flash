@@ -2,10 +2,10 @@
   <div class="flash-card" @click="flip">
     <div class="flash-card-inner" :class="{ flipped: flipped }">
       <div class="flash-card-front" :style="cssVars">
-        <h1 class="flash-title">{{ translation }}</h1>
+        <h1 class="flash-title">{{ recto }}</h1>
       </div>
       <div class="flash-card-back">
-        <h1 class="flash-title">{{ gender }} {{ value }}</h1>
+        <h1 class="flash-title">{{ verso }}</h1>
         <div class="flash-button-container">
           <button class="flash-button flash-button-check" @click="success"><img class="flash-icon"
               src="../assets/check.svg" /></button>
@@ -31,9 +31,8 @@ export default {
     }
   },
   props: {
-    gender: String,
-    value: String,
-    translation: String,
+    recto: String,
+    verso: String,
     order: Number,
     disabled: Boolean,
   },
@@ -53,7 +52,7 @@ export default {
     submit(correct) {
       axios
         .post(`http://localhost:5000/answer`, {
-          word: this.translation,
+          word: this.recto,
           correct
         })
         .then(() => { });

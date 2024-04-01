@@ -2,12 +2,12 @@
   <div class="app">
     <div class="board">
       <div class="discard-pile">
-        <FlashCard v-for="({ gender, value, translation }, index) in discardCards" :gender="gender" :value="value"
-          :translation="translation" :key="index" :order="index" disabled />
+        <FlashCard v-for="({ recto, verso }, index) in discardCards" :recto="recto" :verso="verso" :key="index"
+          :order="index" disabled />
       </div>
       <div class="flash-card-container">
-        <FlashCard v-for="({ gender, value, translation }, index) in cards" :gender="gender" :value="value"
-          :translation="translation" :key="index" :order="index" @success="discard" @fail="discard" />
+        <FlashCard v-for="({ recto, verso }, index) in cards" :recto="recto" :verso="verso" :key="index" :order="index"
+          @success="discard" @fail="discard" />
       </div>
     </div>
     <div class="decks-container">
@@ -47,10 +47,10 @@ export default {
       }
 
       this.currentDeckIndex = index;
-      let deckName = this.decks[index].name;
+      let deckId = this.decks[index].id;
 
       axios
-        .get(`http://localhost:5000/words/${deckName}`)
+        .get(`http://localhost:5000/words/${deckId}`)
         .then(res => {
           this.cards = res.data.reverse();
         })
