@@ -57,6 +57,14 @@ def add_word():
     return "", 201
 
 
+@app.route("/answers", methods=["DELETE"])
+def answers():
+    Answer.query.delete()
+    db.session.commit()
+
+    return "", 204
+
+
 @app.route("/answer", methods=["POST"])
 def answer():
     try:
