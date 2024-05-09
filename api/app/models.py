@@ -52,6 +52,9 @@ class Deck(db.Model):
     created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
     words = db.relationship("Word", secondary="word_deck", back_populates="decks")
+    profiles = db.relationship(
+        "Profile", secondary="profile_deck", back_populates="decks"
+    )
 
     def to_dict(self):
         return {
@@ -61,8 +64,29 @@ class Deck(db.Model):
         }
 
 
+class Profile(db.Model):
+    __tablename__ = "profiles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), nullable=False)
+
+    decks = db.relationship("Deck", secondary="profile_deck", back_populates="profiles")
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "id": self.id,
+        }
+
+
 word_deck = db.Table(
     "word_deck",
     db.Column("word_id", db.Integer, db.ForeignKey("words.id")),
+    db.Column("deck_id", db.Integer, db.ForeignKey("decks.id")),
+)
+
+profile_deck = db.Table(
+    "profile_deck",
+    db.Column("profile_id", db.Integer, db.ForeignKey("profiles.id")),
     db.Column("deck_id", db.Integer, db.ForeignKey("decks.id")),
 )

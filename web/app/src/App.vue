@@ -10,9 +10,12 @@
           :key="index" :order="index" @success="discard" @fail="discard" />
       </div>
     </div>
-    <div class="decks-container">
+    <div class="decks-container" v-if="decks.length == 0">
+      <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" />
+    </div>
+    <div class="decks-container" v-if="decks.length > 0">
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
-        :score="score" :key="index" @pick="pick(index)"
+        :score="score" :key="index" @pick="pickDeck(index)"
         :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />
     </div>
   </div>
@@ -31,6 +34,7 @@ export default {
   },
   data() {
     return {
+      profiles: [],
       decks: [],
       currentDeckIndex: null,
       cards: [],
@@ -41,7 +45,20 @@ export default {
     discard() {
       this.discardCards.push(this.cards.pop());
     },
-    pick(index) {
+    pickProfile(index) {
+      if (this.decks.length) {
+        return;
+      }
+
+      let profileId = this.profiles[index].id;
+
+      axios
+        .get(`http://localhost:5000/decks/${profileId}`)
+        .then(res => {
+          this.decks = res.data;
+        })
+    },
+    pickDeck(index) {
       if (this.cards.length) {
         return;
       }
@@ -58,9 +75,10 @@ export default {
   },
   mounted() {
     axios
-      .get("http://localhost:5000/decks")
+      .get("http://localhost:5000/profiles")
       .then(res => {
-        this.decks = res.data;
+        this.profiles = res.data;
+        console.log(res.data);
       })
   }
 }

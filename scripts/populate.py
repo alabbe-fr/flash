@@ -59,3 +59,41 @@ with open("decks.csv", newline="") as csvfile:
             headers=HEADERS,
             proxies=PROXIES,
         )
+
+with open("profiles.csv", newline="") as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=":", quotechar='"')
+
+    profiles = []
+    i = 0
+
+    for row in spamreader:
+        if i == 0:
+            for profile_name in row:
+                if profile_name:
+                    profiles.append(
+                        {
+                            "name": profile_name,
+                            "decks": [],
+                        }
+                    )
+        else:
+            j = 0
+            while j < len(row):
+                if row[j] and row[j + 1]:
+                    profiles[j // 2]["decks"].append(
+                        {
+                            "name": row[j],
+                            "level": row[j + 1],
+                        }
+                    )
+
+                j += 2
+        i += 1
+
+    for profile in profiles:
+        requests.post(
+            f"{URL}/profile",
+            json=profile,
+            headers=HEADERS,
+            proxies=PROXIES,
+        )

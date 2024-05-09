@@ -6,8 +6,8 @@ from marshmallow import ValidationError
 from sqlalchemy import func
 from random import shuffle
 
-from models import Word, Answer, Deck, DeckLevel
-from validators import word_schema, deck_schema, answer_schema
+from models import Word, Answer, Deck, DeckLevel, Profile
+from validators import word_schema, deck_schema, answer_schema, profile_schema
 from db import db
 
 app = Flask(__name__)
@@ -102,8 +102,8 @@ def answer():
     return "", 200
 
 
-@app.route("/decks")
-def get_decks():
+@app.route("/decks/<profile_id>")
+def get_decks(profile_id):
     decks = []
 
     mistakes_deck_size = (
@@ -123,7 +123,11 @@ def get_decks():
             }
         )
 
-    for deck in Deck.query.all():
+    profile = Profile.query.filter_by(id=profile_id).first()
+    if not profile:
+        abort(404)
+
+    for deck in profile.decks:
         score = len(
             db.session.query(func.count(Answer.word))
             .join(Word, Answer.word == Word.id)
@@ -143,6 +147,12 @@ def get_decks():
         )
 
     return decks
+
+
+@app.route("/profiles")
+def get_profiles():
+    profiles = Profile.query.all()
+    return [profile.to_dict() for profile in profiles]
 
 
 @app.route("/deck", methods=["POST"])
@@ -168,6 +178,40 @@ def add_deck():
                 continue
 
             deck.words.append(word)
+
+        db.session.commit()
+    except ValidationError as err:
+        return jsonify({"message": "Validation error", "errors": err.messages}), 400
+
+    return "", 201
+
+
+@app.route("/profile", methods=["POST"])
+def add_profile():
+    try:
+        data = profile_schema.load(request.json)
+
+        profile = Profile.query.filter_by(name=data["name"]).first()
+        if not profile:
+            profile = Profile(
+                name=data["name"],
+            )
+            db.session.add(profile)
+
+        for deck_json in data["decks"]:
+            level = DeckLevel[deck_json["level"].upper()]
+
+            if (deck_json["name"], level) in [(d.name, d.level) for d in profile.decks]:
+                continue
+
+            deck = Deck.query.filter_by(
+                name=deck_json["name"],
+                level=level,
+            ).first()
+            if not deck:
+                continue
+
+            profile.decks.append(deck)
 
         db.session.commit()
     except ValidationError as err:

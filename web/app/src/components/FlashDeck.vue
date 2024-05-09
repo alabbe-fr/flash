@@ -3,7 +3,7 @@
         <h1 class="dech-name">
             {{ name }}
         </h1>
-        <h1 class="deck-score">{{ score }}/{{ size }}</h1>
+        <h1 class="deck-score" v-if="score && size">{{ score }}/{{ size }}</h1>
         <img class="deck-level" src="../assets/deck/easy.svg" v-if="level === 'easy' && !disabled" />
         <img class="deck-level" src="../assets/deck/medium.svg" v-if="level === 'medium' && !disabled" />
         <img class="deck-level" src="../assets/deck/hard.svg" v-if="level === 'hard' && !disabled" />
