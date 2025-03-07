@@ -1,9 +1,10 @@
 import csv
 import requests
 
+DEBUG = True
 URL = "http://127.0.0.1:5000"
 HEADERS = {"Content-Type": "application/json"}
-PROXIES = {"http": "http://127.0.0.1:8080"}
+PROXIES = {"http": "http://127.0.0.1:8080"} if DEBUG else {}
 
 with open("words.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile, delimiter=":", quotechar='"')
