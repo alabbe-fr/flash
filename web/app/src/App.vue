@@ -6,7 +6,7 @@
           :order="index" disabled />
       </div>
       <div class="flash-card-container">
-        <FlashCard v-for="({ recto, verso, picture }, index) in cards" :recto="recto" :verso="verso" :picture="picture"
+        <FlashCard v-for="({ recto, verso, picture, description }, index) in cards" :recto="recto" :verso="verso" :picture="picture" :description="description"
           :key="index" :order="index" @success="discard" @fail="discard" />
       </div>
     </div>

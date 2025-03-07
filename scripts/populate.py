@@ -17,6 +17,9 @@ with open("words.csv", newline="") as csvfile:
         if len(row) >= 3:
             word["picture"] = row[2]
 
+        if len(row) >= 4:
+            word["description"] = "\n".join(row[3:])
+
         requests.post(
             f"{URL}/word",
             json=word,

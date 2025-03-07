@@ -7,6 +7,7 @@ class WordSchema(Schema):
     recto = fields.Str(required=True)
     verso = fields.Str(required=True)
     picture = fields.Str()
+    description = fields.Str()
 
 
 class AnswerSchema(Schema):

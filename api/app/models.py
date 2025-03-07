@@ -12,6 +12,7 @@ class Word(db.Model):
     recto = db.Column(db.String(256), nullable=False)
     verso = db.Column(db.String(256), nullable=False)
     picture = db.Column(db.String(2048))
+    description = db.Column(db.String(2048))
     created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
     decks = db.relationship("Deck", secondary="word_deck", back_populates="words")
@@ -25,6 +26,7 @@ class Word(db.Model):
             "recto": self.recto,
             "verso": self.verso,
             "picture": self.picture,
+            "description": self.description,
         }
 
 

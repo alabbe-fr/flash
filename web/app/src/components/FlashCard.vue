@@ -7,6 +7,7 @@
       </div>
       <div class="flash-card-back">
         <h1 class="flash-title">{{ verso }}</h1>
+        <pre class="flash-title" v-if="description">{{ description }}</pre>
         <div class="flash-button-container">
           <button class="flash-button flash-button-check" @click="success"><img class="flash-icon"
               src="../assets/check.svg" /></button>
@@ -35,6 +36,7 @@ export default {
     recto: String,
     verso: String,
     picture: String,
+    description: String,
     order: Number,
     disabled: Boolean,
   },
