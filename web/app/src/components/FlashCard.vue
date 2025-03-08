@@ -1,5 +1,5 @@
 <template>
-  <div class="flash-card" @click="flip">
+  <div v-if="show" class="flash-card" @click="flip">
     <div class="flash-card-inner" :class="{ flipped: flipped }">
       <div class="flash-card-front" :style="cssVars">
         <h1 class="flash-title">{{ recto }}</h1>
@@ -39,6 +39,7 @@ export default {
     description: String,
     order: Number,
     disabled: Boolean,
+    show: Boolean
   },
   computed: {
     cssVars() {
