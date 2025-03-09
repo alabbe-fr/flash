@@ -51,8 +51,12 @@ def add_word():
     try:
         data = word_schema.load(request.json)
 
-        if Word.query.filter_by(recto=data["recto"]).first():
-            abort(400)
+        found = Word.query.filter_by(recto=data["recto"]).first()
+        if found:
+            found.picture = data.get("picture")
+            found.description = data.get("description")
+            db.session.commit()
+            return "", 204
 
         new_noun = Word(
             recto=data["recto"],
