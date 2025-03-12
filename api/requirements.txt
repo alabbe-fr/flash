@@ -3,5 +3,6 @@ flask-sqlalchemy
 flask-migrate
 flask-script
 flask-cors
+flask-admin
 psycopg2
 marshmallow

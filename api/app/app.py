@@ -2,6 +2,8 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from marshmallow import ValidationError
 from sqlalchemy import func
 from random import shuffle
@@ -224,6 +226,23 @@ def add_profile():
 
     return "", 201
 
+
+class WordAdmin(ModelView):
+    column_searchable_list = ["recto", "verso"]
+
+
+class DeckAdmin(ModelView):
+    column_searchable_list = ["name"]
+
+
+class ProfileAdmin(ModelView):
+    column_searchable_list = ["name"]
+
+
+admin = Admin(app)
+admin.add_view(WordAdmin(Word, db.session))
+admin.add_view(DeckAdmin(Deck, db.session))
+admin.add_view(ProfileAdmin(Profile, db.session))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
