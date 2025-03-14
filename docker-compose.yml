@@ -23,6 +23,7 @@ services:
     environment:
       DATABASE_URL: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@db/$POSTGRES_DB
       FLASK_ENV: development
+      SECRET_KEY: $SECRET_KEY
     volumes:
       - ./api/app:/app/
     restart: always
@@ -33,6 +34,10 @@ services:
       - "8000:8000"
     volumes:
       - ./web/app:/app
+    restart: always
+
+  redis:
+    build: ./redis
     restart: always
 
 volumes:

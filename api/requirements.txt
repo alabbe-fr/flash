@@ -6,3 +6,4 @@ flask-cors
 flask-admin
 psycopg2
 marshmallow
+redis

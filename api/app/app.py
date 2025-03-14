@@ -7,6 +7,7 @@ from flask_admin.contrib.sqla import ModelView
 from marshmallow import ValidationError
 from sqlalchemy import func
 from random import shuffle
+import redis
 
 from models import Word, Answer, Deck, DeckLevel, Profile
 from validators import word_schema, deck_schema, answer_schema, profile_schema
@@ -15,6 +16,9 @@ from db import db
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SESSION_TYPE"] = "redis"
+app.config["SESSION_REDIS"] = redis.from_url("redis://127.0.0.1:6379")
+app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 CORS(app, origins=["http://localhost:8000"])
 
 db.init_app(app)
