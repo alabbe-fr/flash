@@ -19,7 +19,7 @@ class Word(db.Model):
     answers = db.relationship("Answer", backref="words")
 
     def __repr__(self):
-        return f"{self.recto} -> {self.verso}"
+        return self.verso
 
     def to_dict(self):
         return {
@@ -58,6 +58,9 @@ class Deck(db.Model):
         "Profile", secondary="profile_deck", back_populates="decks"
     )
 
+    def __repr__(self):
+        return self.name
+
     def to_dict(self):
         return {
             "name": self.name,
@@ -73,6 +76,9 @@ class Profile(db.Model):
     name = db.Column(db.String(256), nullable=False)
 
     decks = db.relationship("Deck", secondary="profile_deck", back_populates="profiles")
+
+    def __repr__(self):
+        return self.name
 
     def to_dict(self):
         return {

@@ -233,10 +233,14 @@ def add_profile():
 
 class WordAdmin(ModelView):
     column_searchable_list = ["recto", "verso"]
+    column_list = ("recto", "verso", "picture", "description", "decks")
+    column_filters = ("decks",)
 
 
 class DeckAdmin(ModelView):
     column_searchable_list = ["name"]
+    column_list = ("name", "level", "profiles")
+    column_filters = ("profiles",)
 
 
 class ProfileAdmin(ModelView):
