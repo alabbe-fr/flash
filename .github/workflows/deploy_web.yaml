@@ -8,7 +8,7 @@ on:
       - "web/**"
   workflow_dispatch:
 
-jobs: 
+jobs:
   deploy:
     runs-on: [self-hosted, linux, X64]
 
@@ -24,6 +24,6 @@ jobs:
 
       - name: Build web image
         run: docker build -t ghcr.io/${{ github.repository }}/web:latest ./web
-      
+
       - name: Push web image to GitHub Container Registry
         run: docker push ghcr.io/${{ github.repository }}/web:latest
