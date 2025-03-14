@@ -1,7 +1,7 @@
 <template>
   <div class="app">
-    <div class="board">
-      <div class="discard-pile">
+    <div class="board" v-if="showBoard">
+      <div class="discard-pile" v-if="showDiscardPile">
         <FlashCard v-for="({ recto, verso }, index) in discardCards" :recto="recto" :verso="verso" :key="index"
           :order="index" disabled :show="index == discardCards.length - 1" />
       </div>
@@ -10,10 +10,10 @@
           :key="index" :order="index" :show="cards.length - index < 10" @success="discard" @fail="discard" />
       </div>
     </div>
-    <div class="decks-container" v-if="decks.length == 0">
+    <div class="decks-container" v-if="showProfiles">
       <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" />
     </div>
-    <div class="decks-container" v-if="decks.length > 0">
+    <div class="decks-container" v-if="showDecks">
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
         :score="score" :key="index" @pick="pickDeck(index)"
         :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />
@@ -38,12 +38,33 @@ export default {
       decks: [],
       currentDeckIndex: null,
       cards: [],
-      discardCards: []
+      discardCards: [],
+      state: 0 // 0: Profile selection, 1: Deck selection, 2: Flash cards
+    }
+  },
+  computed: {
+    isMobile() {
+      return screen.width <= 760;
+    },
+    showProfiles() {
+      return this.state === 0;
+    },
+    showDecks() {
+      return this.isMobile ? this.state === 1 : this.state > 0;
+    },
+    showBoard() {
+      return this.state === 2 || !this.isMobile;
+    },
+    showDiscardPile() {
+      return !this.isMobile;
     }
   },
   methods: {
     discard() {
       this.discardCards.push(this.cards.pop());
+      if (this.cards.length === 0) {
+        this.state = 1;
+      }
     },
     pickProfile(index) {
       if (this.decks.length) {
@@ -56,6 +77,7 @@ export default {
         .get(`${process.env.VUE_APP_API_URL}/decks/${profileId}`)
         .then(res => {
           this.decks = res.data;
+          this.state = 1;
         })
     },
     pickDeck(index) {
@@ -70,6 +92,7 @@ export default {
         .get(`${process.env.VUE_APP_API_URL}/words/${deckId}`)
         .then(res => {
           this.cards = res.data.reverse();
+          this.state = 2;
         })
     }
   },
@@ -103,7 +126,8 @@ body {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  flex-grow: 2;
+  min-width: 80vw;
+  padding: 0em 2em;
 }
 
 .flash-card-container {
@@ -122,8 +146,8 @@ body {
 
 .decks-container {
   height: 100vh;
-  width: 30vh;
-  padding: 0 1em;
+  padding: 0em 1em;
   overflow-y: scroll;
+  flex-grow: 1;
 }
 </style>

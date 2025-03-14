@@ -1,6 +1,6 @@
 <template>
     <button class="deck" :disabled="disabled" @click="pick">
-        <h1 class="dech-name">
+        <h1 class="deck-name">
             {{ name }}
         </h1>
         <h1 class="deck-score" v-if="score && size">{{ score }}/{{ size }}</h1>
@@ -39,7 +39,7 @@ export default {
 
 <style scoped>
 .deck {
-    height: 10%;
+    min-height: 10%;
     width: 100%;
     background-color: #f1f1f8;
     border-radius: 1em;
@@ -52,6 +52,9 @@ export default {
     color: #3A5BA0;
     cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 0.5em 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .deck:disabled {
@@ -61,10 +64,7 @@ export default {
 }
 
 .deck-name {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    width: 65%;
 }
 
 .deck-score {
