@@ -4,7 +4,14 @@ import requests
 DEBUG = True
 URL = "https://flash-api.alabbe.fr"
 HEADERS = {"Content-Type": "application/json"}
-PROXIES = {"http": "http://127.0.0.1:8080"} if DEBUG else {}
+PROXIES = (
+    {
+        "http": "http://127.0.0.1:8080",
+        "https": "http://127.0.0.1:8080",
+    }
+    if DEBUG
+    else {}
+)
 
 with open("words.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile, delimiter=":", quotechar='"')
