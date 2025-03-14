@@ -19,7 +19,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_TYPE"] = "redis"
 app.config["SESSION_REDIS"] = redis.from_url("redis://127.0.0.1:6379")
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
-CORS(app, origins=["http://localhost:8000"])
+CORS(app, origins=[os.environ["APP_URL"]])
 
 db.init_app(app)
 migrate = Migrate(app, db)

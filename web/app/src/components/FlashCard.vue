@@ -56,7 +56,7 @@ export default {
     },
     submit(correct) {
       axios
-        .post(`http://localhost:5000/answer`, {
+        .post(`${process.env.VUE_APP_API_URL}/answer`, {
           word: this.recto,
           correct
         })

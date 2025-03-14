@@ -24,6 +24,7 @@ services:
       DATABASE_URL: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@db/$POSTGRES_DB
       FLASK_ENV: development
       SECRET_KEY: $SECRET_KEY
+      APP_URL: $APP_URL
     volumes:
       - ./api/app:/app/
     restart: always
@@ -32,6 +33,8 @@ services:
     build: ./web
     ports:
       - "8000:8000"
+    environment:
+      VUE_APP_API_URL: $API_URL
     volumes:
       - ./web/app:/app
     restart: always

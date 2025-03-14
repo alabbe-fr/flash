@@ -53,7 +53,7 @@ export default {
       let profileId = this.profiles[index].id;
 
       axios
-        .get(`http://localhost:5000/decks/${profileId}`)
+        .get(`${process.env.VUE_APP_API_URL}/decks/${profileId}`)
         .then(res => {
           this.decks = res.data;
         })
@@ -67,7 +67,7 @@ export default {
       let deckId = this.decks[index].id;
 
       axios
-        .get(`http://localhost:5000/words/${deckId}`)
+        .get(`${process.env.VUE_APP_API_URL}/words/${deckId}`)
         .then(res => {
           this.cards = res.data.reverse();
         })
@@ -75,7 +75,7 @@ export default {
   },
   mounted() {
     axios
-      .get("http://localhost:5000/profiles")
+      .get(`${process.env.VUE_APP_API_URL}/profiles`)
       .then(res => {
         this.profiles = res.data;
         console.log(res.data);
