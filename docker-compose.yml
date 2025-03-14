@@ -12,7 +12,6 @@ services:
       POSTGRES_DB: $POSTGRES_DB
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: always
   
   api:
     build: ./api
