@@ -7,3 +7,4 @@ flask-admin
 psycopg2
 marshmallow
 redis
+WTForms==3.1.2
