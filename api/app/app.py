@@ -57,9 +57,6 @@ def add_word():
     try:
         data = word_schema.load(request.json)
 
-        if Word.query.filter_by(recto=data["recto"]).first():
-            abort(400)
-
         new_noun = Word(
             recto=data["recto"],
             verso=data["verso"],
@@ -72,7 +69,7 @@ def add_word():
     except ValidationError as err:
         return jsonify({"message": "Validation error", "errors": err.messages}), 400
 
-    return "", 201
+    return {"id": new_noun.id}, 201
 
 
 @app.route("/answers", methods=["DELETE"])
@@ -168,19 +165,14 @@ def add_deck():
         data = deck_schema.load(request.json)
         level = DeckLevel[data["level"].upper()]
 
-        deck = Deck.query.filter_by(name=data["name"], level=level).first()
-        if not deck:
-            deck = Deck(
-                name=data["name"],
-                level=level,
-            )
-            db.session.add(deck)
+        deck = Deck(
+            name=data["name"],
+            level=level,
+        )
+        db.session.add(deck)
 
-        for word_name in data["words"]:
-            if word_name in [w.recto for w in deck.words]:
-                continue
-
-            word = Word.query.filter_by(recto=word_name).first()
+        for word_id in data["words"]:
+            word = Word.query.filter_by(id=word_id).first()
             if not word:
                 continue
 
@@ -190,7 +182,7 @@ def add_deck():
     except ValidationError as err:
         return jsonify({"message": "Validation error", "errors": err.messages}), 400
 
-    return "", 201
+    return {"id": deck.id}, 201
 
 
 @app.route("/profile", methods=["POST"])
@@ -198,33 +190,43 @@ def add_profile():
     try:
         data = profile_schema.load(request.json)
 
-        profile = Profile.query.filter_by(name=data["name"]).first()
-        if not profile:
-            profile = Profile(
-                name=data["name"],
-            )
-            db.session.add(profile)
+        profile = Profile(
+            name=data["name"],
+        )
+        db.session.add(profile)
 
-        for deck_json in data["decks"]:
-            level = DeckLevel[deck_json["level"].upper()]
-
-            if (deck_json["name"], level) in [(d.name, d.level) for d in profile.decks]:
-                continue
-
-            deck = Deck.query.filter_by(
-                name=deck_json["name"],
-                level=level,
-            ).first()
+        for deck_id in data["decks"]:
+            deck = Deck.query.filter_by(id=deck_id).first()
             if not deck:
                 continue
-
             profile.decks.append(deck)
 
         db.session.commit()
     except ValidationError as err:
         return jsonify({"message": "Validation error", "errors": err.messages}), 400
 
-    return "", 201
+    return {"id": profile.id}, 201
+
+
+@app.route("/profile/<profile_id>", methods=["POST"])
+def update_profile(profile_id):
+    try:
+        data = profile_schema.load(request.json)
+
+        profile = Profile.query.filter_by(id=profile_id).first()
+
+        profile.name = data["name"]
+        for deck_id in data["decks"]:
+            deck = Deck.query.filter_by(id=deck_id).first()
+            if not deck:
+                continue
+            profile.decks.append(deck)
+
+        db.session.commit()
+    except ValidationError as err:
+        return jsonify({"message": "Validation error", "errors": err.messages}), 400
+
+    return {"id": profile.id}, 204
 
 
 class WordAdmin(ModelView):

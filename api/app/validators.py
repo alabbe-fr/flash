@@ -18,17 +18,12 @@ class AnswerSchema(Schema):
 class DeckSchema(Schema):
     name = fields.Str(required=True)
     level = fields.Str(validate=validate.OneOf(DeckLevel.values()))
-    words = fields.List(fields.Str())
-
-
-class ProfileDeckSchema(Schema):
-    name = fields.Str(required=True)
-    level = fields.Str(validate=validate.OneOf(DeckLevel.values()))
+    words = fields.List(fields.Int())
 
 
 class ProfileSchema(Schema):
     name = fields.Str(required=True)
-    decks = fields.List(fields.Nested(ProfileDeckSchema), required=True)
+    decks = fields.List(fields.Int(), required=True)
 
 
 word_schema = WordSchema()

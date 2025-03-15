@@ -16,7 +16,7 @@ class Word(db.Model):
     created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
     decks = db.relationship("Deck", secondary="word_deck", back_populates="words")
-    answers = db.relationship("Answer", backref="words")
+    answers = db.relationship("Answer", backref="words", passive_deletes=True)
 
     def __repr__(self):
         return self.verso
@@ -34,7 +34,9 @@ class Answer(db.Model):
     __tablename__ = "answers"
 
     id = db.Column(db.Integer, primary_key=True)
-    word = db.Column(db.Integer, db.ForeignKey("words.id"), nullable=False)
+    word = db.Column(
+        db.Integer, db.ForeignKey("words.id", ondelete="CASCADE"), nullable=False
+    )
     correct = db.Column(db.Boolean, nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
