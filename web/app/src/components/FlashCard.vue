@@ -143,6 +143,7 @@ export default {
 
 .flash-title {
   font-size: 3em;
+  white-space: pre-wrap;
 }
 
 .flash-image {
