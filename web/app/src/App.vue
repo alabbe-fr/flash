@@ -10,10 +10,8 @@
           :key="index" :order="index" :show="cards.length - index < 10" @success="discard" @fail="discard" />
       </div>
     </div>
-    <div class="decks-container" v-if="showProfiles">
-      <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" />
-    </div>
     <div class="decks-container" v-if="showDecks">
+      <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" />
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
         :score="score" :key="index" @pick="pickDeck(index)"
         :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />
@@ -39,21 +37,18 @@ export default {
       currentDeckIndex: null,
       cards: [],
       discardCards: [],
-      state: 0 // 0: Profile selection, 1: Deck selection, 2: Flash cards
+      state: 0 // 0: Profile/Deck selection, 1: Flash cards
     }
   },
   computed: {
     isMobile() {
       return screen.width <= 760;
     },
-    showProfiles() {
-      return this.state === 0;
-    },
     showDecks() {
-      return this.isMobile ? this.state === 1 : this.state > 0;
+      return !this.isMobile || this.state === 0;
     },
     showBoard() {
-      return this.state === 2 || !this.isMobile;
+      return !this.isMobile || this.state === 1;
     },
     showDiscardPile() {
       return !this.isMobile;
@@ -67,17 +62,18 @@ export default {
       }
     },
     pickProfile(index) {
-      if (this.decks.length) {
-        return;
-      }
-
       let profileId = this.profiles[index].id;
+
+      axios
+        .get(`${process.env.VUE_APP_API_URL}/profiles/${profileId}`)
+        .then(res => {
+          this.profiles = res.data;
+        })
 
       axios
         .get(`${process.env.VUE_APP_API_URL}/decks/${profileId}`)
         .then(res => {
           this.decks = res.data;
-          this.state = 1;
         })
     },
     pickDeck(index) {
@@ -92,7 +88,7 @@ export default {
         .get(`${process.env.VUE_APP_API_URL}/words/${deckId}`)
         .then(res => {
           this.cards = res.data.reverse();
-          this.state = 2;
+          this.state = 1;
         })
     }
   },

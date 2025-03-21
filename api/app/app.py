@@ -52,9 +52,13 @@ def get_deck_words(deck_id):
     return words
 
 
-@app.route("/word", methods=["POST"])
-def add_word():
+@app.route("/word/<deck_id>", methods=["POST"])
+def add_word(deck_id):
     try:
+        deck = Deck.query.filter_by(id=deck_id).first()
+        if not deck:
+            abort(404)
+
         data = word_schema.load(request.json)
 
         new_noun = Word(
@@ -62,6 +66,7 @@ def add_word():
             verso=data["verso"],
             picture=data.get("picture"),
             description=data.get("description"),
+            deck=deck,
         )
 
         db.session.add(new_noun)
@@ -135,8 +140,7 @@ def get_decks(profile_id):
         score = len(
             db.session.query(func.count(Answer.word))
             .join(Word, Answer.word == Word.id)
-            .join(Deck, Word.decks)
-            .filter(Deck.id == deck.id)
+            .filter(Word.deck_id == deck.id)
             .filter(Answer.correct)
             .group_by(Word.id)
             .all()
@@ -153,30 +157,29 @@ def get_decks(profile_id):
     return decks
 
 
-@app.route("/profiles")
-def get_profiles():
-    profiles = Profile.query.all()
+@app.route("/profiles", defaults={"parent_id": None})
+@app.route("/profiles/<parent_id>")
+def get_profiles(parent_id):
+    profiles = Profile.query.filter_by(parent_id=parent_id).all()
     return [profile.to_dict() for profile in profiles]
 
 
-@app.route("/deck", methods=["POST"])
-def add_deck():
+@app.route("/deck/<profile_id>", methods=["POST"])
+def add_deck(profile_id):
     try:
+        profile = Profile.query.filter_by(id=profile_id).first()
+        if not profile:
+            abort(404)
+
         data = deck_schema.load(request.json)
         level = DeckLevel[data["level"].upper()]
 
         deck = Deck(
             name=data["name"],
             level=level,
+            profile=profile,
         )
         db.session.add(deck)
-
-        for word_id in data["words"]:
-            word = Word.query.filter_by(id=word_id).first()
-            if not word:
-                continue
-
-            deck.words.append(word)
 
         db.session.commit()
     except ValidationError as err:
@@ -185,22 +188,27 @@ def add_deck():
     return {"id": deck.id}, 201
 
 
-@app.route("/profile", methods=["POST"])
-def add_profile():
+@app.route("/profile", defaults={"profile_id": None}, methods=["POST"])
+@app.route("/profile/<profile_id>", methods=["POST"])
+def add_profile(profile_id):
     try:
         data = profile_schema.load(request.json)
 
-        profile = Profile(
-            name=data["name"],
-        )
+        if profile_id:
+            parent = Profile.query.filter_by(id=profile_id).first()
+            if not parent:
+                abort(404)
+
+            profile = Profile(
+                name=data["name"],
+                parent=parent,
+            )
+        else:
+            profile = Profile(
+                name=data["name"],
+            )
+
         db.session.add(profile)
-
-        for deck_id in data["decks"]:
-            deck = Deck.query.filter_by(id=deck_id).first()
-            if not deck:
-                continue
-            profile.decks.append(deck)
-
         db.session.commit()
     except ValidationError as err:
         return jsonify({"message": "Validation error", "errors": err.messages}), 400
@@ -208,41 +216,21 @@ def add_profile():
     return {"id": profile.id}, 201
 
 
-@app.route("/profile/<profile_id>", methods=["POST"])
-def update_profile(profile_id):
-    try:
-        data = profile_schema.load(request.json)
-
-        profile = Profile.query.filter_by(id=profile_id).first()
-
-        profile.name = data["name"]
-        for deck_id in data["decks"]:
-            deck = Deck.query.filter_by(id=deck_id).first()
-            if not deck:
-                continue
-            profile.decks.append(deck)
-
-        db.session.commit()
-    except ValidationError as err:
-        return jsonify({"message": "Validation error", "errors": err.messages}), 400
-
-    return {"id": profile.id}, 204
-
-
 class WordAdmin(ModelView):
     column_searchable_list = ["recto", "verso"]
-    column_list = ("recto", "verso", "picture", "description", "decks")
-    column_filters = ("decks",)
+    column_list = ("recto", "verso", "picture", "description", "deck")
+    column_filters = ("deck",)
 
 
 class DeckAdmin(ModelView):
     column_searchable_list = ["name"]
-    column_list = ("name", "level", "profiles")
-    column_filters = ("profiles",)
+    column_list = ("name", "level", "profile")
+    column_filters = ("profile",)
 
 
 class ProfileAdmin(ModelView):
     column_searchable_list = ["name"]
+    column_list = ("name", "parent")
 
 
 admin = Admin(app)

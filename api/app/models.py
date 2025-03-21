@@ -14,9 +14,18 @@ class Word(db.Model):
     picture = db.Column(db.String(2048))
     description = db.Column(db.String(2048))
     created_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    deck_id = db.Column(
+        db.Integer,
+        db.ForeignKey("decks.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    deck = db.relationship("Deck", back_populates="words")
 
-    decks = db.relationship("Deck", secondary="word_deck", back_populates="words")
-    answers = db.relationship("Answer", backref="words", passive_deletes=True)
+    answers = db.relationship(
+        "Answer",
+        backref="words",
+        passive_deletes=True,
+    )
 
     def __repr__(self):
         return self.verso
@@ -35,7 +44,9 @@ class Answer(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(
-        db.Integer, db.ForeignKey("words.id", ondelete="CASCADE"), nullable=False
+        db.Integer,
+        db.ForeignKey("words.id", ondelete="CASCADE"),
+        nullable=False,
     )
     correct = db.Column(db.Boolean, nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.now)
@@ -54,10 +65,17 @@ class Deck(db.Model):
     name = db.Column(db.String(256), nullable=False)
     level = db.Column(ENUM(DeckLevel, create_type=False), nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    profile_id = db.Column(
+        db.Integer,
+        db.ForeignKey("profiles.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    profile = db.relationship("Profile", back_populates="decks")
 
-    words = db.relationship("Word", secondary="word_deck", back_populates="decks")
-    profiles = db.relationship(
-        "Profile", secondary="profile_deck", back_populates="decks"
+    words = db.relationship(
+        "Word",
+        back_populates="deck",
+        passive_deletes=True,
     )
 
     def __repr__(self):
@@ -76,8 +94,18 @@ class Profile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
+    parent_id = db.Column(
+        db.Integer,
+        db.ForeignKey("profiles.id", ondelete="CASCADE"),
+        nullable=True,
+    )
+    parent = db.relationship("Profile", remote_side=[id], backref="children")
 
-    decks = db.relationship("Deck", secondary="profile_deck", back_populates="profiles")
+    decks = db.relationship(
+        "Deck",
+        back_populates="profile",
+        passive_deletes=True,
+    )
 
     def __repr__(self):
         return self.name
@@ -86,17 +114,5 @@ class Profile(db.Model):
         return {
             "name": self.name,
             "id": self.id,
+            "parent_id": self.id,
         }
-
-
-word_deck = db.Table(
-    "word_deck",
-    db.Column("word_id", db.Integer, db.ForeignKey("words.id")),
-    db.Column("deck_id", db.Integer, db.ForeignKey("decks.id")),
-)
-
-profile_deck = db.Table(
-    "profile_deck",
-    db.Column("profile_id", db.Integer, db.ForeignKey("profiles.id")),
-    db.Column("deck_id", db.Integer, db.ForeignKey("decks.id")),
-)
