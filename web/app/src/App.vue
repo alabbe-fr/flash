@@ -64,6 +64,9 @@ export default {
       }
     },
     fetchProfileAndDecks(profileId) {
+      this.decks = [];
+      this.profiles = [];
+
       if (profileId) {
         axios
         .get(`${process.env.VUE_APP_API_URL}/profiles/${profileId}`)
@@ -81,7 +84,6 @@ export default {
         .get(`${process.env.VUE_APP_API_URL}/profiles`)
         .then(res => {
           this.profiles = res.data;
-          this.decks = [];
         })
       }
     },
