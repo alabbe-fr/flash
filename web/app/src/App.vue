@@ -11,8 +11,8 @@
       </div>
     </div>
     <div class="decks-container" v-if="showDecks">
-      <FlashDeck v-if="profilePath.length" name="↩️" @pick="pickParentProfile()" />
-      <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" />
+      <FlashDeck v-if="profilePath.length" name="↩️" @pick="back()" />
+      <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" :disabled="cards.length > 0"/>
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
         :score="score" :key="index" @pick="pickDeck(index)"
         :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />
@@ -85,7 +85,8 @@ export default {
         })
       }
     },
-    pickParentProfile() {
+    back() {
+      this.cards = [];
       this.profilePath.pop();
       let profileId = this.profilePath.length ? this.profilePath.slice(-1)[0] : null;
 
