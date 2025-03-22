@@ -60,7 +60,7 @@ export default {
     discard() {
       this.discardCards.push(this.cards.pop());
       if (this.cards.length === 0) {
-        this.state = 1;
+        this.state = 0;
       }
     },
     fetchProfileAndDecks(profileId) {
