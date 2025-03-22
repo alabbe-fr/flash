@@ -150,6 +150,7 @@ export default {
   width: 80%;
   align-self: center;
   margin-top: 5em;
+  user-select: none;
 }
 
 .flash-button-container {
