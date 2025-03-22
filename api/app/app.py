@@ -32,21 +32,28 @@ def get_words():
 
 @app.route("/words/<deck_id>")
 def get_deck_words(deck_id):
-    if deck_id == "mistakes":
-        words = (
+    deck = Deck.query.filter_by(id=deck_id).first()
+    if not deck:
+        abort(404)
+
+    words = [word.to_dict() for word in deck.words]
+    shuffle(words)
+
+    return words
+
+
+@app.route("/words/mistakes/<profile_id>")
+def get_mistakes(profile_id):
+    words = [
+        word.to_dict()
+        for word in (
             Word.query.join(Answer, Answer.word == Word.id)
+            .join(Deck, Deck.id == Word.deck_id)
+            .filter(Deck.profile_id == profile_id)
             .filter(Answer.correct == False)
-            .limit(10)
             .all()
         )
-    else:
-        deck = Deck.query.filter_by(id=deck_id).first()
-        if not deck:
-            abort(404)
-
-        words = deck.words
-
-    words = [word.to_dict() for word in words]
+    ]
     shuffle(words)
 
     return words
@@ -115,11 +122,14 @@ def answer():
 def get_decks(profile_id):
     decks = []
 
-    mistakes_deck_size = (
-        Answer.query.filter_by(correct=False)
-        .order_by(Answer.created_date.desc())
-        .limit(10)
-        .count()
+    mistakes_deck_size = len(
+        db.session.query(func.count(Answer.id))
+        .join(Word, Answer.word == Word.id)
+        .join(Deck, Word.deck_id == Deck.id)
+        .filter(Deck.profile_id == profile_id)
+        .filter(Answer.correct == False)
+        .group_by(Word.id)
+        .all()
     )
     if mistakes_deck_size > 0:
         decks.append(
@@ -128,7 +138,7 @@ def get_decks(profile_id):
                 "size": mistakes_deck_size,
                 "name": "Mistakes",
                 "level": "easy",
-                "id": "mistakes",
+                "id": f"mistakes/{profile_id}",
             }
         )
 
