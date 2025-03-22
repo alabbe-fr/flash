@@ -11,6 +11,7 @@
       </div>
     </div>
     <div class="decks-container" v-if="showDecks">
+      <FlashDeck v-if="profilePath.length" name="↩️" @pick="pickParentProfile()" />
       <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" />
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
         :score="score" :key="index" @pick="pickDeck(index)"
@@ -32,6 +33,7 @@ export default {
   },
   data() {
     return {
+      profilePath: [],
       profiles: [],
       decks: [],
       currentDeckIndex: null,
@@ -61,20 +63,39 @@ export default {
         this.state = 1;
       }
     },
-    pickProfile(index) {
-      let profileId = this.profiles[index].id;
-
-      axios
+    fetchProfileAndDecks(profileId) {
+      if (profileId) {
+        axios
         .get(`${process.env.VUE_APP_API_URL}/profiles/${profileId}`)
         .then(res => {
           this.profiles = res.data;
         })
-
-      axios
+        
+        axios
         .get(`${process.env.VUE_APP_API_URL}/decks/${profileId}`)
         .then(res => {
           this.decks = res.data;
         })
+      } else {
+        axios
+        .get(`${process.env.VUE_APP_API_URL}/profiles`)
+        .then(res => {
+          this.profiles = res.data;
+          this.decks = [];
+        })
+      }
+    },
+    pickParentProfile() {
+      this.profilePath.pop();
+      let profileId = this.profilePath.length ? this.profilePath.slice(-1)[0] : null;
+
+      this.fetchProfileAndDecks(profileId);
+    },
+    pickProfile(index) {
+      let profileId = this.profiles[index].id;
+      this.profilePath.push(profileId);
+
+      this.fetchProfileAndDecks(profileId);
     },
     pickDeck(index) {
       if (this.cards.length) {
@@ -93,12 +114,7 @@ export default {
     }
   },
   mounted() {
-    axios
-      .get(`${process.env.VUE_APP_API_URL}/profiles`)
-      .then(res => {
-        this.profiles = res.data;
-        console.log(res.data);
-      })
+    this.fetchProfileAndDecks();
   }
 }
 </script>
