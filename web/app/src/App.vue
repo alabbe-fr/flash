@@ -61,9 +61,13 @@ export default {
       this.discardCards.push(this.cards.pop());
       if (this.cards.length === 0) {
         this.state = 0;
+
+        this.fetchProfileAndDecks()
       }
     },
-    fetchProfileAndDecks(profileId) {
+    fetchProfileAndDecks() {
+      let profileId = this.profilePath.length ? this.profilePath.slice(-1)[0] : null;
+
       this.decks = [];
       this.profiles = [];
 
@@ -90,15 +94,13 @@ export default {
     back() {
       this.cards = [];
       this.profilePath.pop();
-      let profileId = this.profilePath.length ? this.profilePath.slice(-1)[0] : null;
 
-      this.fetchProfileAndDecks(profileId);
+      this.fetchProfileAndDecks();
     },
     pickProfile(index) {
-      let profileId = this.profiles[index].id;
-      this.profilePath.push(profileId);
+      this.profilePath.push(this.profiles[index].id);
 
-      this.fetchProfileAndDecks(profileId);
+      this.fetchProfileAndDecks();
     },
     pickDeck(index) {
       if (this.cards.length) {
