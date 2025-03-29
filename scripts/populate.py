@@ -65,8 +65,6 @@ def add_profile(name, parent_id=None) -> int:
 
 
 def add_deck(profile_id, name, level) -> int:
-    print(f"New deck: {name} - {level}")
-
     res = requests.post(
         f"{URL}/deck/{profile_id}",
         json={
@@ -101,7 +99,7 @@ def parse_csv(path):
     current_deck = None
     decks = []
 
-    with open(path, newline="") as csvfile:
+    with open(path, newline="", encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=":", quotechar='"')
         for row in spamreader:
             if row[0].strip() == "":
