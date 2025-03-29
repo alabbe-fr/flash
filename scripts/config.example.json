@@ -1,0 +1,7 @@
+{
+    "debug": true,
+    "prod": true,
+    "debugUrl": "http://localhost:5000",
+    "prodUrl": "https://flash-api.example.com",
+    "proxyUrl": "http://127.0.0.1:8080"
+}

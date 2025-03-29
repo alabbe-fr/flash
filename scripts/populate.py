@@ -1,15 +1,23 @@
 import csv
 import requests
 import os
+import json
 
-DEBUG = True
-PROD = False
-URL = "https://flash-api.alabbe.fr" if PROD else "http://localhost:5000"
+with open("config.json") as f:
+    config = json.load(f)
+
+DEBUG = config.get("debug", True)
+PROD = config.get("prod", False)
+URL = (
+    config.get("prodUrl", "http://localhost:5000")
+    if PROD
+    else config.get("debugUrl", "http://localhost:5000")
+)
 HEADERS = {"Content-Type": "application/json"}
 PROXIES = (
     {
-        "http": "http://127.0.0.1:8080",
-        "https": "http://127.0.0.1:8080",
+        "http": config.get("proxyUrl", "http://localhost:8080"),
+        "https": config.get("proxyUrl", "http://localhost:8080"),
     }
     if DEBUG
     else {}
