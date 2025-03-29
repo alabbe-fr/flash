@@ -167,4 +167,4 @@ def parse_data(path="data", parent_id=None):
         parse_data(child_path, child_id)
 
 
-parse_data()
+parse_data(config.get("dataPath"))
