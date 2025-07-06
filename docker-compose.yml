@@ -29,14 +29,14 @@ services:
       - ./api/app:/app/
     restart: always
 
-  web:
-    build: ./web
+  front:
+    build: ./front
     ports:
       - "8000:8000"
     environment:
       VUE_APP_API_URL: $API_URL
     volumes:
-      - ./web/app:/app
+      - ./front/app:/app
     restart: always
 
   redis:

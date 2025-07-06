@@ -11,6 +11,4 @@ RUN python -m pip install --upgrade pip && python -m pip install -r requirements
 COPY ./app /app
 WORKDIR /app
 
-EXPOSE 5000
-
 CMD ["python", "app.py"]
