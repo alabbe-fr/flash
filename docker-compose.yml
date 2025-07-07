@@ -27,6 +27,12 @@ services:
       REDIS_URL: redis://redis:6379
     volumes:
       - ./api/app:/app/
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     restart: always
 
   front:

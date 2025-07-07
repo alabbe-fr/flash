@@ -25,6 +25,11 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 
+@app.route("/healthcheck")
+def healthcheck():
+    return "", 200
+
+
 @app.route("/words")
 def get_words():
     return [word.to_dict() for word in Word.query.all()]
