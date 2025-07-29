@@ -188,19 +188,7 @@ export default {
 
       return axios
         .post(url, data)
-        .then(res => {
-          let cardId = res.data.id;
-
-          this.cards.push({
-            id: cardId,
-            recto,
-            verso,
-            picture: "",
-            description: "",
-          })
-
-          return cardId;
-        })
+        .then(res => res.data.id)
     },
     createProfile() {
       this.formQuestions = [
@@ -274,7 +262,15 @@ export default {
         
         this
           .addCard(deckId, recto, verso)
-          .then(() => {
+          .then(cardId => {
+            this.cards.push({
+              id: cardId,
+              recto,
+              verso,
+              picture: "",
+              description: "",
+            });
+
             this.reset();
           })
       }
