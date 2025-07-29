@@ -270,8 +270,6 @@ export default {
               picture: "",
               description: "",
             });
-
-            this.reset();
           })
       }
 
