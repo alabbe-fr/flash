@@ -4,7 +4,7 @@
             {{ title }}
         </p>
         <p v-if="choiceMode">˄</p>
-        <input ref="inputRef" class="input" v-model="inputValue" @keyup="handleKey" @blur="exit" :readonly="choiceMode"/>
+        <input ref="inputRef" class="input" v-model="inputValue" @keyup="handleKey" :readonly="choiceMode"/>
         <p v-if="choiceMode">˅</p>
     </div>
 </template>
