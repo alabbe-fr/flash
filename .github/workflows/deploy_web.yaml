@@ -1,11 +1,11 @@
-name: Run script on push to main when web is updated
+name: Run script on push to main when front is updated
 
 on:
   push:
     branches:
       - main
     paths:
-      - "web/**"
+      - "front/**"
   workflow_dispatch:
 
 jobs:
@@ -22,8 +22,8 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build web image
-        run: docker build -t ghcr.io/${{ github.repository }}/web:latest ./web
+      - name: Build front image
+        run: docker build -t ghcr.io/${{ github.repository }}/front:latest ./front
 
-      - name: Push web image to GitHub Container Registry
-        run: docker push ghcr.io/${{ github.repository }}/web:latest
+      - name: Push front image to GitHub Container Registry
+        run: docker push ghcr.io/${{ github.repository }}/front:latest
