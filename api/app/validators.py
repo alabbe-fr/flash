@@ -11,7 +11,6 @@ class WordSchema(Schema):
 
 
 class AnswerSchema(Schema):
-    word = fields.Str(required=True)
     correct = fields.Boolean(required=True)
 
 

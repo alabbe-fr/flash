@@ -37,6 +37,7 @@ export default {
     verso: String,
     picture: String,
     description: String,
+    id: Number,
     order: Number,
     disabled: Boolean,
     show: Boolean
@@ -55,20 +56,23 @@ export default {
       this.flipped = !this.flipped;
     },
     submit(correct) {
-      axios
-        .post(`${process.env.VUE_APP_API_URL}/answer`, {
-          word: this.recto,
+      return axios.post(`${process.env.VUE_APP_API_URL}/answer/${this.id}`, {
           correct
         })
-        .then(() => { });
     },
     success() {
-      this.$emit('success');
-      this.submit(true);
+      this
+        .submit(true)
+        .then(() => {
+        this.$emit('success');
+      });
     },
     fail() {
-      this.$emit('fail');
-      this.submit(false);
+      this
+        .submit(false)
+        .then(() => {
+        this.$emit('fail');
+      });
     },
     generateRandomAngle() {
       this.angle = this.disabled ? 0 : Math.floor(Math.random() * (2 * MAX_ANGLE + 1) - MAX_ANGLE);

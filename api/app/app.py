@@ -97,21 +97,17 @@ def answers():
     return "", 204
 
 
-@app.route("/answer", methods=["POST"])
-def answer():
+@app.route("/answer/<word_id>", methods=["POST"])
+def answer(word_id):
     try:
         data = answer_schema.load(request.json)
 
-        word = Word.query.filter_by(recto=data["word"]).first()
-        if not word:
-            abort(400)
-
-        answer = Answer.query.filter_by(word=word.id).first()
+        answer = Answer.query.filter_by(word=word_id).first()
         if answer:
             answer.correct = data["correct"]
         else:
             new_answer = Answer(
-                word=word.id,
+                word=word_id,
                 correct=data["correct"],
             )
             db.session.add(new_answer)

@@ -36,6 +36,7 @@ class Word(db.Model):
             "verso": self.verso,
             "picture": self.picture,
             "description": self.description,
+            "id": self.id,
         }
 
 
