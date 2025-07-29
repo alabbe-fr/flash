@@ -11,18 +11,27 @@
       </div>
     </div>
     <div class="decks-container" v-if="showDecks">
-      <FlashDeck v-if="profilePath.length" name="↩️" @pick="back()" />
+      <div class="buttons-container">
+        <button @click="back()" :disabled="profilePath.length === 0" v-if="state === 0">
+          <img src="./assets/back.svg" />
+        </button>
+        <button @click="cancel()" v-if="state === 1">
+          <img src="./assets/cancel.svg" />
+        </button>
+        <button @click="createProfile()" :disabled="isMobile || state !== 0">
+          <img src="./assets/new_folder.svg" />
+        </button>
+        <button @click="createDeck()" :disabled="isMobile || state !== 0 || currentProfileId === null">
+          <img src="./assets/new_deck.svg" />
+        </button>
+        <button @click="createCard()" :disabled="isMobile || state !== 1">
+          <img src="./assets/new_card.svg" />
+        </button>
+      </div>
       <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" :disabled="cards.length > 0"/>
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
         :score="score" :key="index" @pick="pickDeck(index)"
-        :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />
-      <FlashDeck name="➕" @pick="createMode()" v-if="showCreationMode"/>
-    </div>
-    <div class="decks-container" v-if="showCreationPanel">
-      <FlashDeck name="↩️" @pick="reset()" />
-      <FlashDeck name="Profile" @pick="createProfile()" />
-      <FlashDeck name="Deck" @pick="createDeck()" v-if="currentProfileId" />
-      <FlashDeck name="Card" @pick="createCard()" v-if="currentDeckIndex != null" />
+        :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />      
     </div>
     <FlashOverlay :title="currentQuestion.title" :choices="currentQuestion.choices || []" v-if="currentQuestion" @submit="addFormValue" @cancel="cancelForm()"/>
   </div>
@@ -53,7 +62,7 @@ export default {
       currentQuestion: null,
       formAnswers: [],
       formCallback: () => {},
-      state: 0 // 0: Profile/Deck selection, 1: Flash cards, 2: Creation panel
+      state: 0 // 0: Profile/Deck selection, 1: Flash cards
     }
   },
   computed: {
@@ -75,14 +84,6 @@ export default {
     showDiscardPile() {
       return !this.isMobile;
     },
-    showCreationMode() {
-      return !this.isMobile;
-    },
-    showCreationPanel() {
-      if (this.isMobile) return false;
-
-      return this.state === 2;
-    },
     currentProfileId() {
       return this.profilePath.length ? this.profilePath.slice(-1)[0] : null;
     },
@@ -92,6 +93,10 @@ export default {
       this.state = 0;
       this.currentDeckIndex = null;
       this.fetchProfileAndDecks();
+    },
+    cancel() {
+      this.cards = [];
+      this.reset();
     },
     discard() {
       this.discardCards.push(this.cards.pop());
@@ -180,9 +185,6 @@ export default {
       };
 
       return axios.post(url, data)
-    },
-    createMode() {
-      this.state = 2;
     },
     createProfile() {
       this.formQuestions = [
@@ -334,4 +336,29 @@ body {
   overflow-y: scroll;
   flex-grow: 1;
 }
+
+.buttons-container {
+  margin-top: 1em;
+
+  & button {
+    padding: 1rem;
+    font-size: 2rem;
+    border-radius: 1rem;
+    border-width: 0.5rem;
+    cursor: pointer;
+    border-color: #3A5BA0;
+    width: 25%;
+  }
+
+  & button:disabled {
+    background-color: #e5e5e5;
+    color: #7b7b7b;
+    border-color: #afafaf;
+
+    & img {
+      filter: grayscale(100%) opacity(0.5);
+    }
+  }
+}
+
 </style>
