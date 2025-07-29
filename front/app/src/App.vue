@@ -174,7 +174,9 @@ export default {
         level
       };
 
-      return axios.post(url, data)
+      return axios
+        .post(url, data)
+        .then(res => res.data.id)
     },
     addCard(deckId, recto, verso) {
       let url = `${process.env.VUE_APP_API_URL}/word/${deckId}`;
@@ -184,7 +186,21 @@ export default {
         verso
       };
 
-      return axios.post(url, data)
+      return axios
+        .post(url, data)
+        .then(res => {
+          let cardId = res.data.id;
+
+          this.cards.push({
+            id: cardId,
+            recto,
+            verso,
+            picture: "",
+            description: "",
+          })
+
+          return cardId;
+        })
     },
     createProfile() {
       this.formQuestions = [
@@ -230,9 +246,7 @@ export default {
         
         this
           .addDeck(name, level)
-          .then(res => {
-            let deckId = res.data.id;            
-
+          .then(deckId => {
             this
               .addCard(deckId, recto, verso)
               .then(() => {
