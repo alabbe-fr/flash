@@ -16,7 +16,15 @@
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
         :score="score" :key="index" @pick="pickDeck(index)"
         :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />
+      <FlashDeck name="➕" @pick="createMode()" v-if="showCreationMode"/>
     </div>
+    <div class="decks-container" v-if="showCreationPanel">
+      <FlashDeck name="↩️" @pick="reset()" />
+      <FlashDeck name="Profile" @pick="createProfile()" />
+      <FlashDeck name="Deck" @pick="createDeck()" v-if="currentProfileId" />
+      <FlashDeck name="Card" @pick="createCard()" v-if="currentDeckIndex != null" />
+    </div>
+    <FlashOverlay :title="currentQuestion.title" :choices="currentQuestion.choices || []" v-if="currentQuestion" @submit="addFormValue" @cancel="cancelForm()"/>
   </div>
 </template>
 
@@ -24,12 +32,14 @@
 import axios from 'axios'
 import FlashCard from './components/FlashCard.vue'
 import FlashDeck from './components/FlashDeck.vue'
+import FlashOverlay from './components/FlashOverlay.vue'
 
 export default {
   name: 'App',
   components: {
     FlashCard,
-    FlashDeck
+    FlashDeck,
+    FlashOverlay,
   },
   data() {
     return {
@@ -39,7 +49,11 @@ export default {
       currentDeckIndex: null,
       cards: [],
       discardCards: [],
-      state: 0 // 0: Profile/Deck selection, 1: Flash cards
+      formQuestions: [],
+      currentQuestion: null,
+      formAnswers: [],
+      formCallback: () => {},
+      state: 0 // 0: Profile/Deck selection, 1: Flash cards, 2: Creation panel
     }
   },
   computed: {
@@ -47,39 +61,57 @@ export default {
       return screen.width <= 760;
     },
     showDecks() {
-      return !this.isMobile || this.state === 0;
+      if (this.state > 1) return false;
+
+      if (this.isMobile) return this.state === 0;
+
+      return true;
     },
     showBoard() {
-      return !this.isMobile || this.state === 1;
+      if (this.isMobile) return this.state === 1;
+
+      return true;
     },
     showDiscardPile() {
       return !this.isMobile;
-    }
+    },
+    showCreationMode() {
+      return !this.isMobile;
+    },
+    showCreationPanel() {
+      if (this.isMobile) return false;
+
+      return this.state === 2;
+    },
+    currentProfileId() {
+      return this.profilePath.length ? this.profilePath.slice(-1)[0] : null;
+    },
   },
   methods: {
+    reset() {
+      this.state = 0;
+      this.currentDeckIndex = null;
+      this.fetchProfileAndDecks();
+    },
     discard() {
       this.discardCards.push(this.cards.pop());
       if (this.cards.length === 0) {
-        this.state = 0;
-
-        this.fetchProfileAndDecks()
+        this.reset();
       }
     },
     fetchProfileAndDecks() {
-      let profileId = this.profilePath.length ? this.profilePath.slice(-1)[0] : null;
-
       this.decks = [];
       this.profiles = [];
 
-      if (profileId) {
+      if (this.currentProfileId) {
         axios
-        .get(`${process.env.VUE_APP_API_URL}/profiles/${profileId}`)
+        .get(`${process.env.VUE_APP_API_URL}/profiles/${this.currentProfileId}`)
         .then(res => {
           this.profiles = res.data;
         })
         
         axios
-        .get(`${process.env.VUE_APP_API_URL}/decks/${profileId}`)
+        .get(`${process.env.VUE_APP_API_URL}/decks/${this.currentProfileId}`)
         .then(res => {
           this.decks = res.data;
         })
@@ -116,6 +148,141 @@ export default {
           this.cards = res.data.reverse();
           this.state = 1;
         })
+    },
+    addProfile(name) {
+      let url = `${process.env.VUE_APP_API_URL}/profile`;
+        if (this.currentProfileId) {
+          url = url.concat("/", this.currentProfileId);
+        }
+        
+        let data = {
+          name,
+        };
+        
+        return axios.post(url, data)
+    },
+    addDeck(name, level) {
+      let url = `${process.env.VUE_APP_API_URL}/deck/${this.currentProfileId}`;
+
+      let data = {
+        name,
+        level
+      };
+
+      return axios.post(url, data)
+    },
+    addCard(deckId, recto, verso) {
+      let url = `${process.env.VUE_APP_API_URL}/word/${deckId}`;
+
+      let data = {
+        recto,
+        verso
+      };
+
+      return axios.post(url, data)
+    },
+    createMode() {
+      this.state = 2;
+    },
+    createProfile() {
+      this.formQuestions = [
+        {
+          title: "Profile name ?"
+        }
+      ];
+      
+      this.formCallback = () => {
+        let name = this.formAnswers.shift();
+
+        this
+          .addProfile(name)
+          .then(() => {
+            this.reset();
+          });
+      }
+
+      this.nextFormQuestion();
+    },
+    createDeck() {
+      this.formQuestions = [
+        {
+          title: "Deck name ?"
+        },
+        {
+          title: "Level ?",
+          choices: ["easy", "medium", "hard"]
+        },
+        {
+          title: "First card recto ?"
+        },
+        {
+          title: "First card verso ?"
+        },
+      ];
+
+      this.formCallback = () => {
+        let name = this.formAnswers.shift();
+        let level = this.formAnswers.shift();
+        let recto = this.formAnswers.shift();
+        let verso = this.formAnswers.shift();
+        
+        this
+          .addDeck(name, level)
+          .then(res => {
+            let deckId = res.data.id;            
+
+            this
+              .addCard(deckId, recto, verso)
+              .then(() => {
+                this.reset();
+              })
+          });
+      }
+
+      this.nextFormQuestion();
+    },
+    createCard() {
+      this.formQuestions = [
+        {
+          title: "Recto ?"
+        },
+        {
+          title: "Verso ?"
+        },
+      ];
+      
+      this.formCallback = () => {
+        let deckId = this.decks[this.currentDeckIndex].id;
+        let recto = this.formAnswers.shift();
+        let verso = this.formAnswers.shift();
+        
+        this
+          .addCard(deckId, recto, verso)
+          .then(() => {
+            this.reset();
+          })
+      }
+
+      this.nextFormQuestion();
+    },
+    addFormValue(value) {
+      this.formAnswers.push(value);
+      this.nextFormQuestion()
+    },
+    nextFormQuestion() {
+      if (this.formQuestions.length === 0) {
+        this.formCallback(); 
+      }
+
+      this.currentQuestion = this.formQuestions.shift();
+    },
+    cancelForm() {
+      this.currentQuestion = null;
+      this.formQuestions = [];
+      this.formAnswers = [];
+      this.formCallback = () => {};
+
+      this.reset();
     }
   },
   mounted() {
