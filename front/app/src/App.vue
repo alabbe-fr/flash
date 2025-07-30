@@ -193,7 +193,7 @@ export default {
     createProfile() {
       this.formQuestions = [
         {
-          title: "Profile name ?"
+          title: "Category name ?"
         }
       ];
       
