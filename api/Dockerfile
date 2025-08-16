@@ -11,4 +11,7 @@ RUN python -m pip install --upgrade pip && python -m pip install -r requirements
 COPY ./app /app
 WORKDIR /app
 
-CMD ["python", "app.py"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
