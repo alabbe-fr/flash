@@ -42,7 +42,8 @@ services:
     environment:
       VUE_APP_API_URL: $API_URL
     volumes:
-      - ./front/app:/app
+      - ./front/app/src:/app/src
+      - ./front/app/public:/app/public
     restart: always
 
   redis:
