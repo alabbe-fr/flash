@@ -1,8 +1,8 @@
 {
-    "debug": true,
-    "prod": true,
-    "debugUrl": "http://localhost:5000",
-    "prodUrl": "https://flash-api.example.com",
-    "proxyUrl": "http://127.0.0.1:8080",
-    "dataPath": ""
+    "debug": false,
+    "prod": false,
+    "devUrl": "http://localhost:5000",
+    "prodUrl": "https://localhost:5000",
+    "proxyUrl": "http://localhost:8080",
+    "dataPath": "/home/ubuntu/Downloads/flash/data"
 }

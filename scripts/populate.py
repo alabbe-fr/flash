@@ -6,12 +6,12 @@ import json
 with open("config.json") as f:
     config = json.load(f)
 
-DEBUG = config.get("debug", True)
+DEBUG = config.get("debug", False)
 PROD = config.get("prod", False)
 URL = (
     config.get("prodUrl", "http://localhost:5000")
     if PROD
-    else config.get("debugUrl", "http://localhost:5000")
+    else config.get("devUrl", "http://localhost:5000")
 )
 HEADERS = {"Content-Type": "application/json"}
 PROXIES = (
