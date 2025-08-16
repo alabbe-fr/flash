@@ -1,3 +1,7 @@
+# Flash Cards
+
+![](./docs/app.png)
+
 ## Development
 
 ### Get started
