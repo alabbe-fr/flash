@@ -8,9 +8,9 @@ on:
       - "db/**"
   workflow_dispatch:
 
-jobs: 
+jobs:
   deploy:
-    runs-on: [self-hosted, linux, X64]
+    runs-on: [self-hosted, Linux, X64]
 
     steps:
       - name: Checkout repository
@@ -24,6 +24,6 @@ jobs:
 
       - name: Build db image
         run: docker build -t ghcr.io/${{ github.repository }}/db:latest ./db
-      
+
       - name: Push db image to GitHub Container Registry
         run: docker push ghcr.io/${{ github.repository }}/db:latest

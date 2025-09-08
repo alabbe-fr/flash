@@ -8,9 +8,9 @@ on:
       - "redis/**"
   workflow_dispatch:
 
-jobs: 
+jobs:
   deploy:
-    runs-on: [self-hosted, linux, X64]
+    runs-on: [self-hosted, Linux, X64]
 
     steps:
       - name: Checkout repository
@@ -24,6 +24,6 @@ jobs:
 
       - name: Build redis image
         run: docker build -t ghcr.io/${{ github.repository }}/redis:latest ./redis
-      
+
       - name: Push redis image to GitHub Container Registry
         run: docker push ghcr.io/${{ github.repository }}/redis:latest
