@@ -320,7 +320,7 @@ body {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  min-width: 80vw;
+  min-width: 75vw;
   padding: 0em 2em;
 }
 

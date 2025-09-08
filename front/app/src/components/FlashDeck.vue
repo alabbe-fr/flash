@@ -65,6 +65,8 @@ export default {
 
 .deck-name {
     width: 65%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .deck-score {
