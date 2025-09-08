@@ -11,8 +11,11 @@ on:
 jobs:
   deploy:
     runs-on: [self-hosted, Linux, X64]
-    container:
-      image: ubuntu:latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      VUE_APP_API_URL: ${{ secrets.API_URL }}
 
     steps:
       - name: Checkout code
@@ -24,27 +27,21 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        working-directory: front/app
+        run: yarn install --frozen-lockfile
 
       - name: Build Vue app
-        run: |
-          VUE_APP_API_URL=${{ secrets.API_URL }}
-          npm run build
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          endpoint-url: ${{ secrets.S3_ENDPOINT }}
+        working-directory: front/app
+        run: yarn build
 
       - name: Sync files to S3
         run: |
-          aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }} \
-            --delete
+          aws s3 sync front/app/dist/ s3://${{ secrets.S3_BUCKET }} \
+            --delete \
+            --endpoint-url ${{ secrets.S3_ENDPOINT }}
 
       - name: Set index.html Cache-Control
         run: |
-          aws s3 cp dist/index.html s3://${{ secrets.S3_BUCKET }}/index.html \
-            --cache-control "no-cache"
+          aws s3 cp front/app/dist/index.html s3://${{ secrets.S3_BUCKET }}/index.html \
+            --cache-control "no-cache" \
+            --endpoint-url ${{ secrets.S3_ENDPOINT }}
