@@ -137,7 +137,7 @@ def get_decks(profile_id):
             {
                 "score": 0,
                 "size": mistakes_deck_size,
-                "name": "Mistakes",
+                "name": "Previous Mistakes",
                 "level": "easy",
                 "id": f"mistakes/{profile_id}",
             }
