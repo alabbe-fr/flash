@@ -64,7 +64,7 @@ export default {
 }
 
 .deck-name {
-    width: 65%;
+    width: 60%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
