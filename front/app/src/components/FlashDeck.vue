@@ -39,47 +39,48 @@ export default {
 
 <style scoped>
 .deck {
-    min-height: 10%;
     width: 100%;
     background-color: #f1f1f8;
-    border-radius: 1em;
-    border-color: #3A5BA0;
-    border-width: 1em;
+    border-radius: calc(var(--border-size) * 2);
+    border-color: var(--primary-color);
+    border-width: var(--border-size);
     border-style: outset;
-    margin: 1em 0;
+    margin: var(--spacing) 0;
     box-sizing: border-box;
     position: relative;
-    color: #3A5BA0;
+    color: var(--primary-color);
     cursor: pointer;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 0.5em 1em;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px var(--border-size) calc(var(--border-size) * 2);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .deck:disabled {
-    background-color: #e5e5e5;
-    color: #7b7b7b;
-    border-color: #afafaf;
+    background-color: var(--disable-background-color);
+    color: var(--disable-color);
+    border-color: var(--disable-border-color);
 }
 
 .deck-name {
     width: 60%;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: var(--deck-font-size);
 }
 
 .deck-score {
     position: absolute;
-    bottom: 0.5em;
-    left: 0.5em;
+    bottom: var(--spacing);
+    left: var(--spacing);
     margin: 0;
+    font-size: var(--deck-font-size);
 }
 
 .deck-level {
     position: absolute;
-    bottom: 0.5em;
-    right: 0.5em;
-    height: 4em;
+    bottom: var(--spacing);
+    right: var(--spacing);
+    height: calc(var(--deck-font-size) * 1.3);
 }
 </style>

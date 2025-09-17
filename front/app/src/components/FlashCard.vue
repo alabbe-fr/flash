@@ -7,7 +7,7 @@
       </div>
       <div class="flash-card-back">
         <h1 class="flash-title">{{ verso }}</h1>
-        <pre class="flash-title" v-if="description">{{ description }}</pre>
+        <pre class="flash-description" v-if="description">{{ description }}</pre>
         <div class="flash-button-container">
           <button class="flash-button flash-button-check" @click="success"><img class="flash-icon"
               src="../assets/check.svg" /></button>
@@ -92,7 +92,7 @@ export default {
   height: 100%;
   width: 100%;
   perspective: 200vh;
-  color: #3A5BA0;
+  color: var(--primary-color);
   z-index: var(--z-index);
   transform: translate(-50%, -50%);
 }
@@ -119,21 +119,21 @@ export default {
   /* Safari */
   backface-visibility: hidden;
   background-color: #f1f1f8;
-  border-radius: 2em;
-  border-color: #3A5BA0;
-  border-width: 1em;
+  border-radius: calc(var(--border-size) * 4);
+  border-color: var(--primary-color);
+  border-width: calc(var(--border-size) * 2);
   border-style: outset;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: 6em 0;
+  padding: 15% 0;
   box-sizing: border-box;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 0.5em 1em;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px var(--border-size) calc(var(--border-size) * 2);
 }
 
 .flash-card-front:hover,
 .flash-card-back:hover {
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 1.5em 3em;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px calc(var(--border-size) * 3) calc(var(--border-size) * 6);
   cursor: pointer;
 }
 
@@ -146,14 +146,23 @@ export default {
 }
 
 .flash-title {
-  font-size: 3em;
+  font-size: calc(var(--deck-font-size) * 1.5);
   white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flash-description {
+  font-size: var(--deck-font-size);
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .flash-image {
   width: 80%;
   align-self: center;
-  margin-top: 5em;
+  margin-top: 15%;
   user-select: none;
 }
 
@@ -164,10 +173,10 @@ export default {
 }
 
 .flash-button {
-  padding: 1rem;
-  font-size: 2rem;
-  border-radius: 1rem;
-  border-width: 0.5rem;
+  padding: calc(var(--border-size) * 2);
+  font-size: calc(var(--border-size) * 4);
+  border-radius: calc(var(--border-size) * 2);
+  border-width: var(--border-size);
   cursor: pointer;
 }
 

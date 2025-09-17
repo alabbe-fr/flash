@@ -67,7 +67,7 @@ export default {
   },
   computed: {
     isMobile() {
-      return screen.width <= 760;
+      return screen.width <= 768;
     },
     showDecks() {
       if (this.state > 1) return false;
@@ -302,6 +302,28 @@ export default {
 </script>
 
 <style>
+:root {
+  --primary-color: #3A5BA0;
+  --secondary-color: #0e387a;
+  --disable-background-color: #e5e5e5;
+  --disable-color: #7b7b7b;
+  --disable-border-color: #afafaf;
+  
+  --deck-font-size: 30px;
+  --border-size: 8px;
+  --spacing: 10px;
+}
+
+
+@media ((min-width: 768px) and (max-width: 1200px)) {
+  :root {
+    --deck-font-size: 15px;
+    --border-size: 4px;
+    --spacing: 5px;
+  }
+}
+
+
 body {
   margin: 0;
 }
@@ -309,7 +331,7 @@ body {
 .app {
   width: 100vw;
   height: 100vh;
-  background-color: #0e387a;
+  background-color: var(--secondary-color);
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -317,11 +339,18 @@ body {
 }
 
 .board {
+  height: 100%;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   min-width: 75vw;
-  padding: 0em 2em;
+  padding: 0 2%;
+}
+
+@media ((max-width: 768px)) {
+  .board {
+    padding: 0 8%;
+  }
 }
 
 .flash-card-container {
@@ -334,34 +363,35 @@ body {
   position: relative;
   height: 45vh;
   width: 30vh;
-  background-color: #3A5BA0;
+  background-color: var(--primary-color);
   border-radius: 2vh;
 }
 
 .decks-container {
-  height: 100vh;
-  padding: 0em 1em;
+  height: 100%;
+  padding: 0 var(--spacing);
   overflow-y: scroll;
   flex-grow: 1;
 }
 
 .buttons-container {
-  margin-top: 1em;
+  margin-top: calc(var(--spacing) * 2);
+  display: flex;
+  justify-content: space-evenly;
 
   & button {
-    padding: 1rem;
-    font-size: 2rem;
-    border-radius: 1rem;
-    border-width: 0.5rem;
+    padding: calc(var(--border-size) * 2);
+    border-radius: calc(var(--border-size) * 2);
+    border-width: var(--border-size);
     cursor: pointer;
-    border-color: #3A5BA0;
-    width: 25%;
+    border-color: var(--primary-color);
+    width: 22%;
   }
 
   & button:disabled {
-    background-color: #e5e5e5;
-    color: #7b7b7b;
-    border-color: #afafaf;
+    background-color: var(--disable-background-color);
+    color: var(--disable-color);
+    border-color: var(--disable-border-color);
 
     & img {
       filter: grayscale(100%) opacity(0.5);
