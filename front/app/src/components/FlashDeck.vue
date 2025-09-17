@@ -1,5 +1,5 @@
 <template>
-    <button class="deck" :disabled="disabled" @click="pick">
+    <button class="deck" :class="{profile: isProfile}" :disabled="disabled" @click="pick">
         <h1 class="deck-name">
             {{ name }}
         </h1>
@@ -22,7 +22,8 @@ export default {
         level: String,
         size: Number,
         score: Number,
-        disabled: Boolean
+        disabled: Boolean,
+        isProfile: Boolean,
     },
     methods: {
         pick() {
@@ -54,6 +55,10 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.profile {
+    border-style: double;
 }
 
 .deck:disabled {

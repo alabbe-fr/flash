@@ -28,10 +28,10 @@
           <img src="./assets/new_card.svg" />
         </button>
       </div>
-      <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" :disabled="cards.length > 0"/>
+      <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" :disabled="cards.length > 0" :isProfile="true"/>
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
         :score="score" :key="index" @pick="pickDeck(index)"
-        :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" />      
+        :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" :isProfile="false"/>      
     </div>
     <FlashOverlay :title="currentQuestion.title" :choices="currentQuestion.choices || []" v-if="currentQuestion" @submit="addFormValue" @cancel="cancelForm()"/>
   </div>
