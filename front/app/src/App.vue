@@ -18,13 +18,13 @@
         <button @click="pickPrevious()" v-if="cards.length > 0">
           <img src="./assets/cancel.svg" />
         </button>
-        <button @click="createProfile()" :disabled="isMobile || state !== 0">
+        <button @click="createProfile()" :disabled="isMobile || cards.length > 0">
           <img src="./assets/new_folder.svg" />
         </button>
-        <button @click="createDeck()" :disabled="isMobile || state !== 0 || currentProfileId === null">
+        <button @click="createDeck()" :disabled="isMobile || cards.length > 0 || currentProfileId === null">
           <img src="./assets/new_deck.svg" />
         </button>
-        <button @click="createCard()" :disabled="isMobile || state !== 1">
+        <button @click="createCard()" :disabled="isMobile || cards.length === 0">
           <img src="./assets/new_card.svg" />
         </button>
       </div>
@@ -62,7 +62,6 @@ export default {
       currentQuestion: null,
       formAnswers: [],
       formCallback: () => {},
-      state: 0 // 0: Profile/Deck selection, 1: Flash cards
     }
   },
   computed: {
