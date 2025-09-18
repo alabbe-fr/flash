@@ -12,10 +12,10 @@
     </div>
     <div class="decks-container" v-if="showDecks">
       <div class="buttons-container">
-        <button @click="back()" :disabled="profilePath.length === 0" v-if="state === 0">
+        <button @click="pickPrevious()" :disabled="profilePath.length === 0" v-if="cards.length === 0">
           <img src="./assets/back.svg" />
         </button>
-        <button @click="cancel()" v-if="state === 1">
+        <button @click="pickPrevious()" v-if="cards.length > 0">
           <img src="./assets/cancel.svg" />
         </button>
         <button @click="createProfile()" :disabled="isMobile || state !== 0">
@@ -31,7 +31,7 @@
       <FlashDeck v-for="({ name }, index) in profiles" :name="name" :key="index" @pick="pickProfile(index)" :disabled="cards.length > 0" :isProfile="true"/>
       <FlashDeck v-for="({ name, level, size, score }, index) in decks" :name="name" :level="level" :size="size"
         :score="score" :key="index" @pick="pickDeck(index)"
-        :disabled="currentDeckIndex !== null && cards.length > 0 && index !== currentDeckIndex" :isProfile="false"/>      
+        :disabled="cards.length > 0 && index !== currentDeckIndex" :isProfile="false"/>      
     </div>
     <FlashOverlay :title="currentQuestion.title" :choices="currentQuestion.choices || []" v-if="currentQuestion" @submit="addFormValue" @cancel="cancelForm()"/>
   </div>
@@ -70,16 +70,10 @@ export default {
       return screen.width <= 768;
     },
     showDecks() {
-      if (this.state > 1) return false;
-
-      if (this.isMobile) return this.state === 0;
-
-      return true;
+      return !this.isMobile || this.cards.length === 0;
     },
     showBoard() {
-      if (this.isMobile) return this.state === 1;
-
-      return true;
+      return !this.isMobile || this.cards.length > 0;
     },
     showDiscardPile() {
       return !this.isMobile;
@@ -89,22 +83,15 @@ export default {
     },
   },
   methods: {
-    reset() {
-      this.state = 0;
-      this.currentDeckIndex = null;
-      this.fetchProfileAndDecks();
-    },
-    cancel() {
-      this.cards = [];
-      this.reset();
-    },
     discard() {
       this.discardCards.push(this.cards.pop());
       if (this.cards.length === 0) {
-        this.reset();
+        this.fetchProfileAndDecks();
       }
     },
     fetchProfileAndDecks() {
+      this.currentDeckIndex = null;
+      this.cards = [];
       this.decks = [];
       this.profiles = [];
 
@@ -129,30 +116,48 @@ export default {
       }
     },
     back() {
-      this.cards = [];
-      this.profilePath.pop();
+      if (this.cards.length === 0) {
+        this.profilePath.pop();
+      }
 
       this.fetchProfileAndDecks();
     },
-    pickProfile(index) {
-      this.profilePath.push(this.profiles[index].id);
-
+    forward(profileId) {
+      this.profilePath.push(profileId);
       this.fetchProfileAndDecks();
+    },
+    pickPrevious() {
+      if (this.cards.length > 0) {
+        history.pushState({profile: this.currentProfileId}, "", "");
+      } else {
+        history.pushState({profile: this.profilePath[this.profilePath.length - 2]}, "", "")
+      }
+
+      this.back();
+    },
+    pickProfile(index) {
+      let profileId = this.profiles[index].id;
+      history.pushState({profile: profileId}, "", "");
+
+      this.forward(profileId);
     },
     pickDeck(index) {
       if (this.cards.length) {
         return;
       }
-
       this.currentDeckIndex = index;
+      
       let deckId = this.decks[index].id;
+      history.pushState({profile: this.currentProfileId, deck: deckId}, "", "");
 
+      this.fetchDeck(deckId);
+    },
+    fetchDeck(deckId) {
       axios
         .get(`${process.env.VUE_APP_API_URL}/words/${deckId}`)
         .then(res => {
           this.cards = res.data.reverse();
-          this.state = 1;
-        })
+        });
     },
     addProfile(name) {
       let url = `${process.env.VUE_APP_API_URL}/profile`;
@@ -203,7 +208,7 @@ export default {
         this
           .addProfile(name)
           .then(() => {
-            this.reset();
+            this.fetchProfileAndDecks();
           });
       }
 
@@ -238,7 +243,7 @@ export default {
             this
               .addCard(deckId, recto, verso)
               .then(() => {
-                this.reset();
+                this.fetchProfileAndDecks();
               })
           });
       }
@@ -292,11 +297,26 @@ export default {
       this.formAnswers = [];
       this.formCallback = () => {};
 
-      this.reset();
+      this.fetchProfileAndDecks();
+    },
+    handlePopState(event) {
+      if (event.state?.deck) {
+        this.currentDeckIndex = null;
+        this.fetchDeck(event.state?.deck);
+        return;
+      }
+
+      if (event.state === null || this.profilePath.includes(event.state.profile)) {
+        this.back();
+        return;
+      }
+
+      this.forward(event.state.profile);
     }
   },
   mounted() {
     this.fetchProfileAndDecks();
+    window.addEventListener('popstate', this.handlePopState);
   }
 }
 </script>
