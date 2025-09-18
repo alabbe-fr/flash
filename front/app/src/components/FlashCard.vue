@@ -159,6 +159,16 @@ export default {
   text-overflow: ellipsis;
 }
 
+@media ((max-width: 768px)) {
+  .flash-title {
+    font-size: var(--deck-font-size);
+  }
+
+  .flash-description {
+    font-size: calc(var(--deck-font-size) * 0.8);
+  }
+}
+
 .flash-image {
   width: 80%;
   align-self: center;
