@@ -1,7 +1,7 @@
 <template>
   <div class="app">
-    <div class="board" v-if="showBoard">
-      <div class="discard-pile" v-if="showDiscardPile">
+    <div class="board" v-if="!isMobile || hasCards">
+      <div class="discard-pile" v-if="!isMobile">
         <FlashCard v-for="({ recto, verso }, index) in discardCards" :recto="recto" :verso="verso" :key="index"
           :order="index" disabled :show="index == discardCards.length - 1" />
       </div>
@@ -10,7 +10,7 @@
           :key="index" :order="index" :show="cards.length - index < 10" @success="discard" @fail="discard" />
       </div>
     </div>
-    <div class="decks-container" v-if="showDecks">
+    <div class="decks-container" v-if="!isMobile || !hasCards">
       <div class="buttons-container">
         <button @click="pickPrevious()" :disabled="profilePath.length === 0" v-if="cards.length === 0">
           <img src="./assets/back.svg" />
@@ -68,14 +68,8 @@ export default {
     isMobile() {
       return screen.width <= 768;
     },
-    showDecks() {
-      return !this.isMobile || this.cards.length === 0;
-    },
-    showBoard() {
-      return !this.isMobile || this.cards.length > 0;
-    },
-    showDiscardPile() {
-      return !this.isMobile;
+    hasCards() {
+      return this.cards.length > 0;
     },
     currentProfileId() {
       return this.profilePath.length ? this.profilePath.slice(-1)[0] : null;
